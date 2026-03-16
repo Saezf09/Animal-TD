@@ -437,7 +437,10 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.2.7f2/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.2.7f2/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
 "Assets/EnemyGen/Scripts/AnimationEditor.cs"
+"Assets/EnemyGen/Scripts/AttackConfigurationScriptableObject.cs"
+"Assets/EnemyGen/Scripts/Enemy.cs"
 "Assets/EnemyGen/Scripts/EnemyController.cs"
+"Assets/EnemyGen/Scripts/EnemyType.cs"
 "Assets/TutorialInfo/Scripts/Readme.cs"
 -langversion:9.0
 /deterministic

@@ -14,6 +14,7 @@ public class EnemyController : MonoBehaviour
     {
         agent.SetDestination(dest.transform.position);
         stoppingDistance = agent.stoppingDistance;
+        animator.SetFloat("AnimSpeed", agent.speed/3);
 
     }
     private void Update()
