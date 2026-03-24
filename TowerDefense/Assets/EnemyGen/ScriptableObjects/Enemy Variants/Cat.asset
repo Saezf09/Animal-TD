@@ -15,4 +15,5 @@ MonoBehaviour:
   Health: 15
   MoveSpeed: 4.5
   Flying: 0
+  weight: 2
   AttackConfig: {fileID: 11400000, guid: 761721ec3cea83b4b8350cfad782e690, type: 2}
