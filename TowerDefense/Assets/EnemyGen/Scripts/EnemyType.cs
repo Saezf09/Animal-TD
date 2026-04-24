@@ -5,7 +5,7 @@ using UnityEngine.AI;
 public class EnemyType : ScriptableObject
 {
     //Enemy Stats 
-    public int Health = 100;
+    public float Health;
     public float MoveSpeed = 2f;
     public bool Flying;
     public int weight;

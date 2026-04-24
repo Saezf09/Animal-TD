@@ -5,7 +5,7 @@ using UnityEngine.AI;
 public class EnemyController : MonoBehaviour
 {
     public NavMeshAgent agent;
-    public GameObject dest;
+    [HideInInspector] public GameObject dest;
     public Animator animator;
     private bool isMoving;
     private float speed;

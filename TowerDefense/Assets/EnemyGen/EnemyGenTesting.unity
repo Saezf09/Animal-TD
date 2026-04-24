@@ -207,6 +207,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &333223838
 MeshFilter:
@@ -295,6 +296,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1068526992
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1068526993}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1068526993
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1068526992}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -4.59, y: 0.77, z: -13.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1314192534
 GameObject:
   m_ObjectHideFlags: 0
@@ -305,9 +337,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1314192536}
   - component: {fileID: 1314192535}
+  - component: {fileID: 1314192537}
   m_Layer: 0
   m_Name: EnemyManager
-  m_TagString: Gate
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -332,8 +365,8 @@ MonoBehaviour:
   - {fileID: 6462483132450190904, guid: ce7d5dd015a4ac249a5f6d94f2de3f69, type: 3}
   - {fileID: 6160373100432265279, guid: fbb7d66e8c29cfa4ead89fc55298e157, type: 3}
   - {fileID: 5359933283733291062, guid: bfe9365a99085d243964bbc5ad9b14a9, type: 3}
-  SpawnPoint: {x: 1, y: 1, z: 1}
-  totalWeight: 40
+  spawnObjectRef: {fileID: 1068526992}
+  difficultyScript: {fileID: 1314192537}
 --- !u!4 &1314192536
 Transform:
   m_ObjectHideFlags: 0
@@ -349,6 +382,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1314192537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314192534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6243f1b318d5dbd40b4bf4dd9d5ec6f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Adapt_Diff
+  player: {fileID: 0}
+  difficulty: 0.5
+  smoothing: 0.3
+  enemyGenerator: {fileID: 1314192535}
+  weight: 50
 --- !u!1 &1699305215
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +414,7 @@ GameObject:
   - component: {fileID: 1699305216}
   m_Layer: 0
   m_Name: Cylinder
-  m_TagString: Untagged
+  m_TagString: Gate
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -461,6 +511,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1699305219
 MeshFilter:
@@ -479,7 +530,7 @@ Transform:
   m_GameObject: {fileID: 1699305215}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.06668, y: 0.2, z: 33.92}
+  m_LocalPosition: {x: -5.06668, y: 2.22, z: 33.92}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -648,14 +699,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1979341113}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 2
     m_Resolution: -1
@@ -759,3 +810,4 @@ SceneRoots:
   - {fileID: 922081366}
   - {fileID: 1699305220}
   - {fileID: 1314192536}
+  - {fileID: 1068526993}
