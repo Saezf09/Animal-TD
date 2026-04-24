@@ -292,6 +292,13 @@ MonoBehaviour:
   emptyTile: {fileID: 6503697408275254060, guid: 203b071699077c54884a49f867010f58, type: 3}
   straightPrefab: {fileID: 6209246712036114435, guid: 8860dfdb008f4814ea64ad2798fc2aba, type: 3}
   turnPrefab: {fileID: 907027770401284773, guid: 165477e7475ae5246ad1f19435cefb60, type: 3}
+  foliageObjects:
+  - {fileID: 557719423525435025, guid: f0eb62613758eea439f9fc7d1bb71dd6, type: 3}
+  - {fileID: 8169716057484497401, guid: 3453c7d639084994db95f7c361abba5d, type: 3}
+  - {fileID: 7681856898977691638, guid: 7c0d215ef7d87354d9f67466517b729a, type: 3}
+  - {fileID: 3305519011286397544, guid: c6b03191f0f04124f938c901a9bded84, type: 3}
+  - {fileID: 7856764637961450656, guid: e1e0fc4aa4390184aafbc0c3f453a805, type: 3}
+  - {fileID: 5644623576569566749, guid: cd8d6b5a7d5789c40bf65c5b852cc9c7, type: 3}
 --- !u!4 &1590435678
 Transform:
   m_ObjectHideFlags: 0
@@ -333,14 +340,14 @@ Light:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1679653326}
   m_Enabled: 1
-  serializedVersion: 11
+  serializedVersion: 12
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
-  m_CookieSize: 10
+  m_CookieSize2D: {x: 10, y: 10}
   m_Shadows:
     m_Type: 2
     m_Resolution: -1

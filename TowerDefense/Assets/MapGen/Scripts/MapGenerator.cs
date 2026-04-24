@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,7 +18,7 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private GameObject straightPrefab;
     [Tooltip("L-shape connecting Forward(+Z) and Right(+X) at 0 rotation")]
     [SerializeField] private GameObject turnPrefab;
-
+    [SerializeField] private GameObject[] foliageObjects;
     private int curX, curZ;
     private int currentCount = 0;
     private bool forceDirectionChange = false;
@@ -54,7 +55,33 @@ public class MapGenerator : MonoBehaviour
                 CreateTileAt(x, z, emptyTile, 0, 0f, 0f);
             }
         }
+        GenerateFoliage();
         pathCoroutine = StartCoroutine(GeneratePath());
+    }
+
+    void GenerateFoliage()
+    {
+        int foliageNum = 180;
+        
+        for (int x = 0; x < mapWidth; x++)
+        {
+            for (int z = 0; z < mapHeight; z++)
+            {
+                if (tileData[x, z].tileObject != null)
+                {
+                    if (foliageNum <= 0) { return; }
+
+                    if(Random.Range(0, 100) < 25) 
+                    { 
+                        CreateTileAt(x, z, foliageObjects[Random.Range(0, foliageObjects.Length - 1)], 0, 0f, 0f); 
+                        foliageNum -= 1; 
+                    }                    
+
+                    
+                }
+            }
+         }
+        
     }
 
     void RegenerateMap()
@@ -67,6 +94,7 @@ public class MapGenerator : MonoBehaviour
                 CreateTileAt(x, z, emptyTile, 0, 0f, 0f);
             }
         }
+        GenerateFoliage();
         pathCoroutine = StartCoroutine(GeneratePath());
     }
 

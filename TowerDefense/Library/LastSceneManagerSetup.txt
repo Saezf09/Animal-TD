@@ -1,5 +1,0 @@
-sceneSetups:
-- path: Assets/MapGen/MapScene/MainGameMap.unity
-  isLoaded: 1
-  isActive: 1
-  isSubScene: 0
