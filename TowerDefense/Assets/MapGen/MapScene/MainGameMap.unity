@@ -289,6 +289,8 @@ MonoBehaviour:
   mapHeight: 20
   tileSize: 2
   pathHeightOffset: 0
+  minPathLength: 15
+  maxPathLength: 45
   emptyTile: {fileID: 6503697408275254060, guid: 203b071699077c54884a49f867010f58, type: 3}
   straightPrefab: {fileID: 6209246712036114435, guid: 8860dfdb008f4814ea64ad2798fc2aba, type: 3}
   turnPrefab: {fileID: 907027770401284773, guid: 165477e7475ae5246ad1f19435cefb60, type: 3}
@@ -308,7 +310,7 @@ Transform:
   m_GameObject: {fileID: 1590435676}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.01571, y: 0, z: 7.79014}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

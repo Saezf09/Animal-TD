@@ -13,15 +13,19 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private float tileSize = 1.0f;
     [SerializeField] private float pathHeightOffset = 0.1f;
 
+    [SerializeField] private int minPathLength;
+    [SerializeField] private int maxPathLength;
+    private int totalPathLength = 0;
+
     [Header("Prefabs")]
     [SerializeField] private GameObject emptyTile;
     [SerializeField] private GameObject straightPrefab;
     [Tooltip("L-shape connecting Forward(+Z) and Right(+X) at 0 rotation")]
     [SerializeField] private GameObject turnPrefab;
     [SerializeField] private GameObject[] foliageObjects;
+    [SerializeField] private int foliageNum;
     private int curX, curZ;
     private int currentCount = 0;
-    private bool forceDirectionChange = false;
 
     private enum Direction { LEFT, RIGHT, DOWN, UP };
     private Direction curDirection = Direction.DOWN;
@@ -61,29 +65,35 @@ public class MapGenerator : MonoBehaviour
 
     void GenerateFoliage()
     {
-        int foliageNum = 180;
         
+        // 1. Create a list of all potential coordinates
+        List<Vector2Int> availablePositions = new List<Vector2Int>();
         for (int x = 0; x < mapWidth; x++)
         {
             for (int z = 0; z < mapHeight; z++)
             {
-                if (tileData[x, z].tileObject != null)
-                {
-                    if (foliageNum <= 0) { return; }
-
-                    if(Random.Range(0, 100) < 25) 
-                    { 
-                        CreateTileAt(x, z, foliageObjects[Random.Range(0, foliageObjects.Length - 1)], 0, 0f, 0f); 
-                        foliageNum -= 1; 
-                    }                    
-
-                    
-                }
+                availablePositions.Add(new Vector2Int(x, z));
             }
-         }
-        
-    }
+        }
 
+        // 2. Fisher-Yates Shuffle
+        for (int i = 0; i < availablePositions.Count; i++)
+        {
+            Vector2Int temp = availablePositions[i];
+            int randomIndex = Random.Range(i, availablePositions.Count);
+            availablePositions[i] = availablePositions[randomIndex];
+            availablePositions[randomIndex] = temp;
+        }
+
+        // 3. Place foliage on the first 'foliageNum' shuffled positions
+        int count = Mathf.Min(foliageNum, availablePositions.Count);
+        for (int i = 0; i < count; i++)
+        {
+            Vector2Int pos = availablePositions[i];
+            GameObject prefab = foliageObjects[Random.Range(0, foliageObjects.Length)];
+            CreateTileAt(pos.x, pos.y, prefab, 0, 0f, Random.Range(0, 4) * 90f);
+        }
+    }
     void RegenerateMap()
     {
         if (pathCoroutine != null) StopCoroutine(pathCoroutine);
@@ -129,10 +139,15 @@ public class MapGenerator : MonoBehaviour
         curDirection = Direction.DOWN;
         currentCount = 0;
 
-        while (curZ < mapHeight)
+        // 1. Reset the length BEFORE the loop starts
+        totalPathLength = 0;
+
+        while (curZ < mapHeight && totalPathLength < maxPathLength)
         {
             Direction oldDir = curDirection;
             EvaluateMovement();
+
+            // (Removed the totalPathLength = 0; that was here)
 
             GameObject prefabToUse;
             float rotation = 0f;
@@ -140,7 +155,7 @@ public class MapGenerator : MonoBehaviour
             if (oldDir == curDirection)
             {
                 prefabToUse = straightPrefab;
-                rotation = (curDirection == Direction.LEFT || curDirection == Direction.RIGHT) ? 90f : 0f;
+                rotation = (curDirection == Direction.LEFT || curDirection == Direction.RIGHT) ? 0f : 90f;
             }
             else
             {
@@ -150,22 +165,70 @@ public class MapGenerator : MonoBehaviour
 
             CreateTileAt(curX, curZ, prefabToUse, 1, pathHeightOffset, rotation);
             MoveCursor();
+
+            // 2. Increment the length AFTER placing a tile
+            totalPathLength++;
+
             yield return new WaitForSeconds(0.05f);
         }
     }
 
     private void EvaluateMovement()
     {
-        if (curDirection == Direction.LEFT && curX <= 0) forceDirectionChange = true;
-        else if (curDirection == Direction.RIGHT && curX >= mapWidth - 1) forceDirectionChange = true;
+        int directStepsToExit = (mapHeight - 1) - curZ;
 
-        if (currentCount > 3 && (Random.value > 0.7f || forceDirectionChange))
+        // 1. Boundary Safety Check
+        bool hittingLeftWall = (curDirection == Direction.LEFT && curX <= 0);
+        bool hittingRightWall = (curDirection == Direction.RIGHT && curX >= mapWidth - 1);
+
+        if (hittingLeftWall || hittingRightWall)
+        {
+            curDirection = Direction.DOWN; // Explicitly forcing DOWN is safer here
+            currentCount = 0;
+            return;
+        }
+
+        // 2. MAX LENGTH LOGIC: The "Rush Tactic" (Locked)
+        int remainingAllowedSteps = maxPathLength - totalPathLength;
+
+        // If we only have exactly enough (or fewer) steps to reach the bottom...
+        if (remainingAllowedSteps <= directStepsToExit)
+        {
+            // Force direction to DOWN if it isn't already
+            if (curDirection != Direction.DOWN)
+            {
+                curDirection = Direction.DOWN;
+                currentCount = 0;
+            }
+
+            // RETURN EARLY: This is the crucial fix. It skips the stall tactic 
+            // and the random turn logic, permanently locking the path downward.
+            return;
+        }
+
+        // 3. MINIMUM LENGTH LOGIC: The "Stall Tactic"
+        if (curDirection == Direction.DOWN)
+        {
+            int remainingRequiredSteps = minPathLength - totalPathLength;
+
+            if (remainingRequiredSteps > directStepsToExit)
+            {
+                ChangeDirection();
+                currentCount = 0;
+                return;
+            }
+        }
+
+        // 4. Normal random turn logic
+        if (currentCount > 3 && Random.value > 0.7f)
         {
             ChangeDirection();
             currentCount = 0;
-            forceDirectionChange = false;
         }
-        else { currentCount++; }
+        else
+        {
+            currentCount++;
+        }
     }
 
     private void ChangeDirection()
@@ -185,11 +248,11 @@ public class MapGenerator : MonoBehaviour
     {
         if (from == Direction.DOWN)
         {
-            if (to == Direction.LEFT) return 180f;
-            if (to == Direction.RIGHT) return 90f;
+            if (to == Direction.LEFT) return 0f;
+            if (to == Direction.RIGHT) return 270f;
         }
-        if (from == Direction.LEFT) return 0f;
-        if (from == Direction.RIGHT) return 270f;
+        if (from == Direction.LEFT) return 180f;
+        if (from == Direction.RIGHT) return 90f;
         return 0f;
     }
 
