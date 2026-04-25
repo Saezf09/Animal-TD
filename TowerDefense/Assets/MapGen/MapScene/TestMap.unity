@@ -269,7 +269,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 16e1df644bc317f4bbcfbf94046f184c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
-  panSpeed: 40
+  panSpeed: 80
   cameraHeight: 100
   zoomSpeed: 20
   minZoom: 5

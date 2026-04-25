@@ -15,8 +15,9 @@ public class MapGenerator : MonoBehaviour
 
     [SerializeField] private int minPathLength;
     [SerializeField] private int maxPathLength;
-
     [SerializeField] private int borderThickness = 2;
+
+
 
     public int MapWidth => mapWidth;
     public int MapHeight => mapHeight;
@@ -43,6 +44,8 @@ public class MapGenerator : MonoBehaviour
 
     public Transform SpawnPoint { get; private set; }
     public Transform EndPoint { get; private set; }
+
+    public List<Vector3> PathWaypoints { get; private set; } = new List<Vector3>();
 
     private int curX, curZ;
     private int currentCount = 0;
@@ -192,6 +195,8 @@ public class MapGenerator : MonoBehaviour
             SpawnPoint = sp.transform;
         }
 
+        PathWaypoints.Clear();
+
         int lastPathX = curX;
         int lastPathZ = curZ;
 
@@ -218,6 +223,12 @@ public class MapGenerator : MonoBehaviour
             lastPathZ = curZ;
 
             CreateTileAt(curX, curZ, prefabToUse, 1, pathHeightOffset, rotation);
+
+            float wpX = (curX * tileSize) * (tileSize * 0.5f);
+            float wpZ = (curZ * tileSize) * (tileSize * 0.5f);
+
+            PathWaypoints.Add(new Vector3(wpX, pathHeightOffset + 0.5f, wpZ));
+
             MoveCursor();
 
             totalPathLength++;
@@ -240,7 +251,7 @@ public class MapGenerator : MonoBehaviour
 
         if (basePrefab != null)
         {
-            Vector3 basePos = new Vector3(endX, pathHeightOffset + 0.1f, endZ);
+            Vector3 basePos = new Vector3(endX, pathHeightOffset, endZ);
 
             float finalRotation = baseRotationModifier;
             if (autoRotateBase)
