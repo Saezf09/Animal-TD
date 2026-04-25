@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a1e2aa4a278ee4c9282c6924f35903, type: 3}
+  m_Name: Goat
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyType
+  enemyName: Goat
+  enemyPrefab: {fileID: 5359933283733291062, guid: bfe9365a99085d243964bbc5ad9b14a9, type: 3}
+  maxHealth: 150
+  moveSpeed: 7
+  turnSpeed: 10
+  spawnWeight: 2
+  minWaveRequirement: 5
+  baseDamage: 3

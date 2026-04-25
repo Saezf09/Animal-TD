@@ -187,14 +187,7 @@ public class MapGenerator : MonoBehaviour
         currentCount = 0;
         totalPathLength = 0;
 
-        float startX = (curX * tileSize) + (tileSize * 0.5f);
-        float startZ = (curZ * tileSize) + (tileSize * 0.5f);
-        if (spawnPointPrefab != null)
-        {
-            GameObject sp = Instantiate(spawnPointPrefab, new Vector3(startX, pathHeightOffset + 0.1f, startZ), Quaternion.identity, transform);
-            SpawnPoint = sp.transform;
-        }
-
+        // 1. Cleared out the old manual SpawnPoint instantiation that was here!
         PathWaypoints.Clear();
 
         int lastPathX = curX;
@@ -208,6 +201,7 @@ public class MapGenerator : MonoBehaviour
             GameObject prefabToUse;
             float rotation = 0f;
 
+            // Figure out the normal path tile first...
             if (oldDir == curDirection)
             {
                 prefabToUse = straightPrefab;
@@ -219,14 +213,29 @@ public class MapGenerator : MonoBehaviour
                 rotation = CalculateTurnRotation(oldDir, curDirection);
             }
 
+            // --- NEW: Override the normal tile if this is the very first step! ---
+            if (totalPathLength == 0 && spawnPointPrefab != null)
+            {
+                prefabToUse = spawnPointPrefab;
+                // Assuming your spawn point faces "down" the map by default. 
+                // Change this to 90, 180, or 270 if it faces the wrong way!
+                rotation = 0f;
+            }
+
             lastPathX = curX;
             lastPathZ = curZ;
 
             CreateTileAt(curX, curZ, prefabToUse, 1, pathHeightOffset, rotation);
 
-            float wpX = (curX * tileSize) * (tileSize * 0.5f);
-            float wpZ = (curZ * tileSize) * (tileSize * 0.5f);
+            // --- NEW: Grab the reference to the tile we just placed so the spawner can find it ---
+            if (totalPathLength == 0)
+            {
+                SpawnPoint = tileData[curX, curZ].tileObject.transform;
+            }
 
+            // Record the waypoint for the enemies
+            float wpX = (curX * tileSize) + (tileSize * 0.5f);
+            float wpZ = (curZ * tileSize) + (tileSize * 0.5f);
             PathWaypoints.Add(new Vector3(wpX, pathHeightOffset + 0.5f, wpZ));
 
             MoveCursor();
@@ -235,7 +244,7 @@ public class MapGenerator : MonoBehaviour
             yield return new WaitForSeconds(0.05f);
         }
 
-        // --- NEW: Dynamically offset the base 2 tiles FORWARD ---
+        // --- The Base spawning logic below remains exactly the same! ---
         int baseCenterX = lastPathX;
         int baseCenterZ = lastPathZ;
 
@@ -243,7 +252,6 @@ public class MapGenerator : MonoBehaviour
         else if (curDirection == Direction.LEFT) baseCenterX -= 2;
         else if (curDirection == Direction.RIGHT) baseCenterX += 2;
 
-        // Clear the 3x3 footprint
         ClearAreaForBase(baseCenterX, baseCenterZ);
 
         float endX = (baseCenterX * tileSize) + (tileSize * 0.5f);
@@ -251,7 +259,7 @@ public class MapGenerator : MonoBehaviour
 
         if (basePrefab != null)
         {
-            Vector3 basePos = new Vector3(endX, pathHeightOffset, endZ);
+            Vector3 basePos = new Vector3(endX, pathHeightOffset + 0.1f, endZ);
 
             float finalRotation = baseRotationModifier;
             if (autoRotateBase)
