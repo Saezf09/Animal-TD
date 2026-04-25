@@ -23,9 +23,6 @@ public class CameraController : MonoBehaviour
         // --- NEW: Get the camera component ---
         cam = GetComponent<Camera>();
 
-        if (mapGen == null)
-            mapGen = FindObjectOfType<MapGenerator>();
-
         transform.rotation = Quaternion.Euler(30f, 45f, 0f);
 
         if (mapGen != null)

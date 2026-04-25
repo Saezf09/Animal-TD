@@ -41,8 +41,6 @@ public class EnemySpawner : MonoBehaviour
 
     private void Start()
     {
-        if (mapGen == null) mapGen = FindObjectOfType<MapGenerator>();
-
         if (waveText != null) waveText.text = $"Wave: 0 / {totalWaves}";
         if (timerText != null) timerText.text = "Press 'Enter' to Start!";
     }
