@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 223836461}
   - component: {fileID: 223836460}
   - component: {fileID: 223836463}
+  - component: {fileID: 223836464}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -178,10 +179,10 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 5000
   field of view: 60
-  orthographic: 0
-  orthographic size: 5
+  orthographic: 1
+  orthographic size: 50
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -205,13 +206,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 223836459}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.3251436, y: -0, z: -0, w: 0.9456647}
-  m_LocalPosition: {x: 20.42, y: 17.1, z: -8.38}
+  m_LocalRotation: {x: 0.32556805, y: 0, z: 0, w: 0.9455186}
+  m_LocalPosition: {x: 100, y: 80, z: -40}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 37.949, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 38, y: 0, z: 0}
 --- !u!114 &223836463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,6 +257,24 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &223836464
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 223836459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16e1df644bc317f4bbcfbf94046f184c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraController
+  panSpeed: 40
+  cameraHeight: 100
+  zoomSpeed: 20
+  minZoom: 5
+  maxZoom: 50
+  mapGen: {fileID: 1590435677}
 --- !u!1 &1590435676
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,11 +310,19 @@ MonoBehaviour:
   pathHeightOffset: 0
   minPathLength: 15
   maxPathLength: 45
+  borderThickness: 10
   emptyTile: {fileID: 1933440745349800, guid: b355c3687ea5b204b9de4b2f6c7ddca5, type: 3}
   straightPrefab: {fileID: 1014224152500586, guid: 6e2139f20958e144dbceba44efb32355, type: 3}
   turnPrefab: {fileID: 1106741066563502, guid: 341b429a3478ae64493e7744c90631c7, type: 3}
-  foliageObjects: []
-  foliageNum: 0
+  foliageObjects:
+  - {fileID: 4349378864734883295, guid: f4fc3ed5094e0f845a1a973ffca79f79, type: 3}
+  - {fileID: 386747468713394664, guid: 13add3fbda075294fa2e802aa6b6470d, type: 3}
+  - {fileID: 3815439977492987713, guid: 001bb43cff71c6a47a7860c88949cb71, type: 3}
+  foliageNum: 100
+  spawnPointPrefab: {fileID: 0}
+  basePrefab: {fileID: 761115404616608608, guid: b72c106090197f345b2370aec28ac0a6, type: 3}
+  baseRotationModifier: 0
+  autoRotateBase: 1
 --- !u!4 &1590435678
 Transform:
   m_ObjectHideFlags: 0

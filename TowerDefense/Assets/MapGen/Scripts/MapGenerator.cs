@@ -15,6 +15,14 @@ public class MapGenerator : MonoBehaviour
 
     [SerializeField] private int minPathLength;
     [SerializeField] private int maxPathLength;
+
+    [SerializeField] private int borderThickness = 2;
+
+    public int MapWidth => mapWidth;
+    public int MapHeight => mapHeight;
+    public float TileSize => tileSize;
+    public int BorderThickness => borderThickness;   
+
     private int totalPathLength = 0;
 
     [Header("Prefabs")]
@@ -24,6 +32,18 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private GameObject turnPrefab;
     [SerializeField] private GameObject[] foliageObjects;
     [SerializeField] private int foliageNum;
+
+    [Header("Path Markers & Base")]
+    [SerializeField] private GameObject spawnPointPrefab;
+    [SerializeField] private GameObject basePrefab;
+    [Tooltip("Add 90, 180, 270, etc., to rotate the base if it faces the wrong way")]
+    [SerializeField] private float baseRotationModifier = 0f;
+    [Tooltip("Automatically spins the base to face the direction the path entered from")]
+    [SerializeField] private bool autoRotateBase = true;
+
+    public Transform SpawnPoint { get; private set; }
+    public Transform EndPoint { get; private set; }
+
     private int curX, curZ;
     private int currentCount = 0;
 
@@ -39,8 +59,12 @@ public class MapGenerator : MonoBehaviour
     private TileData[,] tileData;
     private Coroutine pathCoroutine;
 
+    private Transform borderContainer;
+
     void Awake()
     {
+        borderContainer = new GameObject("Border").transform;
+        borderContainer.SetParent(transform);
         GenerateInitialGrid();
     }
 
@@ -60,13 +84,31 @@ public class MapGenerator : MonoBehaviour
             }
         }
         GenerateFoliage();
+        GenerateBorder();
         pathCoroutine = StartCoroutine(GeneratePath());
+    }
+
+    void GenerateBorder()
+    {
+        for (int x = -borderThickness; x < mapWidth + borderThickness; x++)
+        {
+            for (int z = -borderThickness; z < mapHeight + borderThickness; z++)
+            {
+                if (x < 0 || x >= mapWidth || z < 0 || z >= mapHeight)
+                {
+                    float xPos = (x * tileSize) + (tileSize * 0.5f);
+                    float zPos = (z * tileSize) + (tileSize * 0.5f);
+                    Vector3 pos = new Vector3(xPos, 0, zPos);
+
+                    GameObject prefab = foliageObjects[Random.Range(0, foliageObjects.Length)];
+                    Instantiate(prefab, pos, Quaternion.Euler(0, Random.Range(0, 4) * 90f, 0), borderContainer);
+                }
+            }
+        }
     }
 
     void GenerateFoliage()
     {
-        
-        // 1. Create a list of all potential coordinates
         List<Vector2Int> availablePositions = new List<Vector2Int>();
         for (int x = 0; x < mapWidth; x++)
         {
@@ -76,7 +118,6 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        // 2. Fisher-Yates Shuffle
         for (int i = 0; i < availablePositions.Count; i++)
         {
             Vector2Int temp = availablePositions[i];
@@ -85,7 +126,6 @@ public class MapGenerator : MonoBehaviour
             availablePositions[randomIndex] = temp;
         }
 
-        // 3. Place foliage on the first 'foliageNum' shuffled positions
         int count = Mathf.Min(foliageNum, availablePositions.Count);
         for (int i = 0; i < count; i++)
         {
@@ -94,9 +134,15 @@ public class MapGenerator : MonoBehaviour
             CreateTileAt(pos.x, pos.y, prefab, 0, 0f, Random.Range(0, 4) * 90f);
         }
     }
+
     void RegenerateMap()
     {
         if (pathCoroutine != null) StopCoroutine(pathCoroutine);
+
+        if (SpawnPoint != null) Destroy(SpawnPoint.gameObject);
+        if (EndPoint != null) Destroy(EndPoint.gameObject);
+        foreach (Transform child in borderContainer) Destroy(child.gameObject);
+
         for (int x = 0; x < mapWidth; x++)
         {
             for (int z = 0; z < mapHeight; z++)
@@ -105,6 +151,7 @@ public class MapGenerator : MonoBehaviour
             }
         }
         GenerateFoliage();
+        GenerateBorder();
         pathCoroutine = StartCoroutine(GeneratePath());
     }
 
@@ -117,16 +164,13 @@ public class MapGenerator : MonoBehaviour
             Destroy(tileData[x, z].tileObject);
         }
 
-        // ADDED OFFSET: (x * tileSize) + (tileSize * 0.5f)
-        // This centers the tile on the grid cell
-        float xPos = (x * tileSize) + (tileSize);
-        float zPos = (z * tileSize) + (tileSize);
+        float xPos = (x * tileSize) + (tileSize * 0.5f);
+        float zPos = (z * tileSize) + (tileSize * 0.5f);
 
         Vector3 pos = new Vector3(xPos, yOffset, zPos);
         Quaternion rot = Quaternion.Euler(0, yRotation, 0);
 
         GameObject newTile = Instantiate(prefab, pos, rot, transform);
-        
 
         tileData[x, z].tileObject = newTile;
         tileData[x, z].tileID = id;
@@ -138,16 +182,23 @@ public class MapGenerator : MonoBehaviour
         curZ = 0;
         curDirection = Direction.DOWN;
         currentCount = 0;
-
-        // 1. Reset the length BEFORE the loop starts
         totalPathLength = 0;
+
+        float startX = (curX * tileSize) + (tileSize * 0.5f);
+        float startZ = (curZ * tileSize) + (tileSize * 0.5f);
+        if (spawnPointPrefab != null)
+        {
+            GameObject sp = Instantiate(spawnPointPrefab, new Vector3(startX, pathHeightOffset + 0.1f, startZ), Quaternion.identity, transform);
+            SpawnPoint = sp.transform;
+        }
+
+        int lastPathX = curX;
+        int lastPathZ = curZ;
 
         while (curZ < mapHeight && totalPathLength < maxPathLength)
         {
             Direction oldDir = curDirection;
             EvaluateMovement();
-
-            // (Removed the totalPathLength = 0; that was here)
 
             GameObject prefabToUse;
             float rotation = 0f;
@@ -163,13 +214,87 @@ public class MapGenerator : MonoBehaviour
                 rotation = CalculateTurnRotation(oldDir, curDirection);
             }
 
+            lastPathX = curX;
+            lastPathZ = curZ;
+
             CreateTileAt(curX, curZ, prefabToUse, 1, pathHeightOffset, rotation);
             MoveCursor();
 
-            // 2. Increment the length AFTER placing a tile
             totalPathLength++;
-
             yield return new WaitForSeconds(0.05f);
+        }
+
+        // --- NEW: Dynamically offset the base 2 tiles FORWARD ---
+        int baseCenterX = lastPathX;
+        int baseCenterZ = lastPathZ;
+
+        if (curDirection == Direction.DOWN) baseCenterZ += 2;
+        else if (curDirection == Direction.LEFT) baseCenterX -= 2;
+        else if (curDirection == Direction.RIGHT) baseCenterX += 2;
+
+        // Clear the 3x3 footprint
+        ClearAreaForBase(baseCenterX, baseCenterZ);
+
+        float endX = (baseCenterX * tileSize) + (tileSize * 0.5f);
+        float endZ = (baseCenterZ * tileSize) + (tileSize * 0.5f);
+
+        if (basePrefab != null)
+        {
+            Vector3 basePos = new Vector3(endX, pathHeightOffset + 0.1f, endZ);
+
+            float finalRotation = baseRotationModifier;
+            if (autoRotateBase)
+            {
+                if (curDirection == Direction.LEFT) finalRotation += 90f;
+                else if (curDirection == Direction.RIGHT) finalRotation -= 90f;
+            }
+
+            Quaternion baseRot = Quaternion.Euler(0, finalRotation, 0);
+
+            GameObject playerBase = Instantiate(basePrefab, basePos, baseRot, transform);
+            EndPoint = playerBase.transform;
+        }
+    }
+
+
+    // --- UPDATED: Destroys map tiles AND overlapping border foliage ---
+    // --- UPDATED: Clears normal tiles and border trees without needing path protection ---
+    private void ClearAreaForBase(int centerX, int centerZ)
+    {
+        // 1. Clear any normal grid tiles (in case the base generated near an edge)
+        for (int x = centerX - 1; x <= centerX + 1; x++)
+        {
+            for (int z = centerZ - 1; z <= centerZ + 1; z++)
+            {
+                if (x >= 0 && x < mapWidth && z >= 0 && z < mapHeight)
+                {
+                    if (tileData[x, z].tileObject != null)
+                    {
+                        Destroy(tileData[x, z].tileObject);
+                        tileData[x, z].tileObject = null;
+                        tileData[x, z].tileID = -1;
+                    }
+                }
+            }
+        }
+
+        // 2. Clear the Border Foliage
+        // Calculate the exact physical world boundaries of the 3x3 footprint
+        float minX = (centerX - 1) * tileSize;
+        float maxX = (centerX + 2) * tileSize;
+        float minZ = (centerZ - 1) * tileSize;
+        float maxZ = (centerZ + 2) * tileSize;
+
+        // Iterate backwards to safely destroy blocking trees
+        for (int i = borderContainer.childCount - 1; i >= 0; i--)
+        {
+            Transform tree = borderContainer.GetChild(i);
+
+            if (tree.position.x >= minX && tree.position.x <= maxX &&
+                tree.position.z >= minZ && tree.position.z <= maxZ)
+            {
+                Destroy(tree.gameObject);
+            }
         }
     }
 
@@ -177,36 +302,28 @@ public class MapGenerator : MonoBehaviour
     {
         int directStepsToExit = (mapHeight - 1) - curZ;
 
-        // 1. Boundary Safety Check
         bool hittingLeftWall = (curDirection == Direction.LEFT && curX <= 0);
         bool hittingRightWall = (curDirection == Direction.RIGHT && curX >= mapWidth - 1);
 
         if (hittingLeftWall || hittingRightWall)
         {
-            curDirection = Direction.DOWN; // Explicitly forcing DOWN is safer here
+            curDirection = Direction.DOWN;
             currentCount = 0;
             return;
         }
 
-        // 2. MAX LENGTH LOGIC: The "Rush Tactic" (Locked)
         int remainingAllowedSteps = maxPathLength - totalPathLength;
 
-        // If we only have exactly enough (or fewer) steps to reach the bottom...
         if (remainingAllowedSteps <= directStepsToExit)
         {
-            // Force direction to DOWN if it isn't already
             if (curDirection != Direction.DOWN)
             {
                 curDirection = Direction.DOWN;
                 currentCount = 0;
             }
-
-            // RETURN EARLY: This is the crucial fix. It skips the stall tactic 
-            // and the random turn logic, permanently locking the path downward.
             return;
         }
 
-        // 3. MINIMUM LENGTH LOGIC: The "Stall Tactic"
         if (curDirection == Direction.DOWN)
         {
             int remainingRequiredSteps = minPathLength - totalPathLength;
@@ -219,7 +336,6 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        // 4. Normal random turn logic
         if (currentCount > 3 && Random.value > 0.7f)
         {
             ChangeDirection();
