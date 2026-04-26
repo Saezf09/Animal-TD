@@ -9,6 +9,9 @@ public class EnemyMovement : MonoBehaviour
     private List<Vector3> waypoints;
     private int currentTargetIndex = 0;
 
+    // --- NEW: Animator Reference ---
+    private Animator anim;
+
     public void Initialize(List<Vector3> pathList, EnemyData data)
     {
         waypoints = pathList;
@@ -16,6 +19,21 @@ public class EnemyMovement : MonoBehaviour
 
         myData = data;
         currentHealth = myData.maxHealth;
+
+        // --- NEW: Get the animator and sync the speed ---
+        anim = GetComponentInChildren<Animator>();
+
+        if (anim != null)
+        {
+            // Calculate the multiplier. 
+            // If the enemy moves at 6 speed, but the animation was built for 3 speed,
+            // the multiplier becomes 2.0 (The animation plays twice as fast!)
+            float speedMultiplier = myData.moveSpeed / myData.baseAnimationWalkSpeed;
+            anim.speed = speedMultiplier;
+
+            // Tell the animator to start walking
+            anim.SetBool("IsWalking", true);
+        }
 
         if (waypoints != null && waypoints.Count > 0)
         {
@@ -60,9 +78,25 @@ public class EnemyMovement : MonoBehaviour
 
     private void Die()
     {
-        // Later on, can add code here to spawn particle effects, play a death sound,
-        // or add money before destroying the object!       
-        Destroy(gameObject);
+        // Stop the enemy from moving any further while the death animation plays
+        myData.moveSpeed = 0f;
+
+        if (anim != null)
+        {
+            // --- CRITICAL FIX: Reset the animator speed to normal! ---
+            // If we don't do this, a fast goblin will play its death animation in fast-forward.
+            anim.speed = 1f;
+
+            anim.SetBool("IsWalking", false);
+            anim.SetTrigger("Die");
+
+            // Destroy the object after a delay to let the animation finish (e.g., 2 seconds)
+            Destroy(gameObject, 2f);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void ReachBase()

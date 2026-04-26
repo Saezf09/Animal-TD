@@ -259,7 +259,7 @@ public class MapGenerator : MonoBehaviour
 
         if (basePrefab != null)
         {
-            Vector3 basePos = new Vector3(endX, pathHeightOffset + 0.1f, endZ);
+            Vector3 basePos = new Vector3(endX, pathHeightOffset, endZ);
 
             float finalRotation = baseRotationModifier;
             if (autoRotateBase)

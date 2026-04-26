@@ -19,3 +19,5 @@ MonoBehaviour:
   turnSpeed: 12
   spawnWeight: 2
   minWaveRequirement: 3
+  baseDamage: 1
+  baseAnimationWalkSpeed: 6

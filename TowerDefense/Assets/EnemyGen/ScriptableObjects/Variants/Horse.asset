@@ -20,3 +20,4 @@ MonoBehaviour:
   spawnWeight: 5
   minWaveRequirement: 7
   baseDamage: 5
+  baseAnimationWalkSpeed: 6

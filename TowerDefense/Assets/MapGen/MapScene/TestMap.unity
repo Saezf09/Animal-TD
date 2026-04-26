@@ -487,11 +487,11 @@ MonoBehaviour:
   totalWaves: 10
   startingWaveWeight: 10
   weightIncreasePerWave: 5
-  timeBetweenWaves: 20
+  timeBetweenWaves: 4
   minChunkSize: 3
   baseMaxChunkSize: 5
   chunkGrowthPerWave: 0.5
-  timeBetweenChunks: 3
+  timeBetweenChunks: 1
   baseDistanceBetweenEnemies: 2.5
   enemyScaleFactor: 3
 --- !u!4 &1099861723
@@ -911,7 +911,7 @@ MonoBehaviour:
   pathHeightOffset: 0
   minPathLength: 15
   maxPathLength: 45
-  borderThickness: 10
+  borderThickness: 20
   emptyTile: {fileID: 1933440745349800, guid: b355c3687ea5b204b9de4b2f6c7ddca5, type: 3}
   straightPrefab: {fileID: 1014224152500586, guid: 6e2139f20958e144dbceba44efb32355, type: 3}
   turnPrefab: {fileID: 1106741066563502, guid: 341b429a3478ae64493e7744c90631c7, type: 3}
