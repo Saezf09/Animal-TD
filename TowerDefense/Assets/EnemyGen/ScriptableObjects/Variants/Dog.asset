@@ -18,3 +18,7 @@ MonoBehaviour:
   moveSpeed: 6
   turnSpeed: 10
   spawnWeight: 1
+  minWaveRequirement: 1
+  baseDamage: 1
+  baseAnimationWalkSpeed: 3
+  furReward: 3

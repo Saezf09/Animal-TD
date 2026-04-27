@@ -3386,6 +3386,7 @@ GameObject:
   - component: {fileID: 7071460482278298252}
   - component: {fileID: -4520128839173405629}
   - component: {fileID: 7481514002728559286}
+  - component: {fileID: 2858164199447045411}
   m_Layer: 0
   m_Name: White_Cow
   m_TagString: Untagged
@@ -3444,6 +3445,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a68d9daa5a28e4da2382e6e1f60852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  isDead: 0
+--- !u!65 &2858164199447045411
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6160373100432265279}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.379563, z: 2.2345638}
+  m_Center: {x: 0, y: 0.73562187, z: 0.114403725}
 --- !u!1 &6406619980959816178
 GameObject:
   m_ObjectHideFlags: 0

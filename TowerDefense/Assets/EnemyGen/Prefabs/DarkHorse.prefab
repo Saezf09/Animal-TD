@@ -508,6 +508,7 @@ GameObject:
   - component: {fileID: 2703104435273291429}
   - component: {fileID: -847092788022636498}
   - component: {fileID: 2804340190882218291}
+  - component: {fileID: 2056071174940698558}
   m_Layer: 0
   m_Name: DarkHorse
   m_TagString: Untagged
@@ -566,6 +567,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a68d9daa5a28e4da2382e6e1f60852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  isDead: 0
+--- !u!65 &2056071174940698558
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1226737742511936304}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.7281897, z: 1.8928947}
+  m_Center: {x: 0, y: 0.95053184, z: 0.10687637}
 --- !u!1 &1412892832385062905
 GameObject:
   m_ObjectHideFlags: 0

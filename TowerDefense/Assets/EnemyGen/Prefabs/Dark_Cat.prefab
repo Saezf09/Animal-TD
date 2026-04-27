@@ -5384,6 +5384,7 @@ GameObject:
   - component: {fileID: 1166641252882621534}
   - component: {fileID: 6464568246417241270}
   - component: {fileID: 734803766444422102}
+  - component: {fileID: 6897567551423913346}
   m_Layer: 0
   m_Name: Dark_Cat
   m_TagString: Untagged
@@ -5442,6 +5443,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a68d9daa5a28e4da2382e6e1f60852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+--- !u!65 &6897567551423913346
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7825142667059551117}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.26216316, y: 0.4815243, z: 0.9876499}
+  m_Center: {x: -0.03573513, y: 0.25622723, z: 0}
 --- !u!1 &7927034817435093620
 GameObject:
   m_ObjectHideFlags: 0

@@ -24,4 +24,8 @@ public class EnemyData : ScriptableObject
     [Header("Animation")]
     [Tooltip("The movement speed at which the walk animation looks perfectly natural (no foot sliding)")]
     public float baseAnimationWalkSpeed = 3f;
+    
+    [Tooltip("How much Fur the player gets for killing this enemy")]
+    public int furReward = 5;
+
 }

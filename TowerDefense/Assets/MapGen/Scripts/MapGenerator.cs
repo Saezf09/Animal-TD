@@ -5,78 +5,90 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// Handles the procedural generation of the game map, including grid initialization,
+/// path routing, waypoint caching, and the placement of environmental assets such as foliage and the player base.
+/// </summary>
 public class MapGenerator : MonoBehaviour
 {
+    // --------------------------------------------------------
+    // DIMENSIONAL SETTINGS
+    // --------------------------------------------------------
     [Header("Map Settings")]
-    [SerializeField] private int mapWidth = 10;
-    [SerializeField] private int mapHeight = 10;
-    [SerializeField] private float tileSize = 1.0f;
-    [SerializeField] private float pathHeightOffset = 0.1f;
+    [SerializeField] private int mapWidth = 10; // The total width of the playable grid.
+    [SerializeField] private int mapHeight = 10; // The total height of the playable grid.
+    [SerializeField] private float tileSize = 1.0f; // The physical world-space size of a single grid unit.
+    [SerializeField] private float pathHeightOffset = 0.1f; // Vertical offset to prevent z-fighting with the ground plane.
 
-    [SerializeField] private int minPathLength;
-    [SerializeField] private int maxPathLength;
-    [SerializeField] private int borderThickness = 2;
-
-
+    [SerializeField] private int minPathLength; // The minimum required steps for a valid enemy path.
+    [SerializeField] private int maxPathLength; // The absolute maximum steps allowed for the enemy path.
+    [SerializeField] private int borderThickness = 2; // The depth of the decorative perimeter foliage.
 
     public int MapWidth => mapWidth;
     public int MapHeight => mapHeight;
     public float TileSize => tileSize;
-    public int BorderThickness => borderThickness;   
+    public int BorderThickness => borderThickness;
 
-    private int totalPathLength = 0;
+    private int totalPathLength = 0; // Tracks the current length of the generated path.
 
+    // --------------------------------------------------------
+    // ASSET REFERENCES
+    // --------------------------------------------------------
     [Header("Prefabs")]
-    [SerializeField] private GameObject emptyTile;
-    [SerializeField] private GameObject straightPrefab;
+    [SerializeField] private GameObject emptyTile; // The default ground tile.
+    [SerializeField] private GameObject straightPrefab; // The linear path segment.
     [Tooltip("L-shape connecting Forward(+Z) and Right(+X) at 0 rotation")]
-    [SerializeField] private GameObject turnPrefab;
-    [SerializeField] private GameObject[] foliageObjects;
-    [SerializeField] private int foliageNum;
+    [SerializeField] private GameObject turnPrefab; // The corner path segment.
+    [SerializeField] private GameObject[] foliageObjects; // Array of decorative environmental meshes.
+    [SerializeField] private int foliageNum; // The target quantity of randomized foliage to scatter.
 
     [Header("Path Markers & Base")]
-    [SerializeField] private GameObject spawnPointPrefab;
-    [SerializeField] private GameObject basePrefab;
-    [Tooltip("Add 90, 180, 270, etc., to rotate the base if it faces the wrong way")]
+    [SerializeField] private GameObject spawnPointPrefab; // The specific tile indicating the enemy origin.
+    [SerializeField] private GameObject basePrefab; // The core objective structure.
+    [Tooltip("Add 90, 180, 270, etc., to rotate the base if it faces the incorrect axis")]
     [SerializeField] private float baseRotationModifier = 0f;
-    [Tooltip("Automatically spins the base to face the direction the path entered from")]
+    [Tooltip("Automatically aligns the base to face the terminal path direction")]
     [SerializeField] private bool autoRotateBase = true;
 
-    public Transform SpawnPoint { get; private set; }
-    public Transform EndPoint { get; private set; }
+    // --------------------------------------------------------
+    // EXPOSED STATE VARIABLES
+    // --------------------------------------------------------
+    public Transform SpawnPoint { get; private set; } // The localized origin for enemy entities.
+    public Transform EndPoint { get; private set; } // The target destination for enemy entities.
+    public List<Vector3> PathWaypoints { get; private set; } = new List<Vector3>(); // Cached spatial coordinates for navigation.
 
-    public List<Vector3> PathWaypoints { get; private set; } = new List<Vector3>();
-
-    private int curX, curZ;
-    private int currentCount = 0;
+    // --------------------------------------------------------
+    // INTERNAL STATE TRACKING
+    // --------------------------------------------------------
+    private int curX, curZ; // The current operational coordinates during path generation.
+    private int currentCount = 0; // Tracks consecutive steps in a single direction.
 
     private enum Direction { LEFT, RIGHT, DOWN, UP };
-    private Direction curDirection = Direction.DOWN;
+    private Direction curDirection = Direction.DOWN; // The current trajectory of the path generator.
 
     public struct TileData
     {
-        public GameObject tileObject;
-        public int tileID;
+        public GameObject tileObject; // The instantiated physical mesh.
+        public int tileID; // Numeric identifier for tile type (0 = empty, 1 = path, etc.).
     }
 
-    private TileData[,] tileData;
-    private Coroutine pathCoroutine;
+    private TileData[,] tileData; // 2D array caching the state of every grid coordinate.
+    private Coroutine pathCoroutine; // Reference to the active generation sequence.
+    private Transform borderContainer; // Organizational parent for decorative boundary objects.
 
-    private Transform borderContainer;
-
+    /// <summary>
+    /// Initializes internal structures and begins the procedural generation sequence.
+    /// </summary>
     void Awake()
     {
         borderContainer = new GameObject("Border").transform;
-        borderContainer.SetParent(transform);
-        GenerateInitialGrid();
+        borderContainer.SetParent(transform);        
     }
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space)) RegenerateMap();
-    }
-
-    void GenerateInitialGrid()
+    /// <summary>
+    /// Populates the coordinate matrix with default empty tiles and initiates the sequential generation phases.
+    /// </summary>
+    public void GenerateInitialGrid()
     {
         tileData = new TileData[mapWidth, mapHeight];
         for (int x = 0; x < mapWidth; x++)
@@ -91,12 +103,16 @@ public class MapGenerator : MonoBehaviour
         pathCoroutine = StartCoroutine(GeneratePath());
     }
 
+    /// <summary>
+    /// Populates the perimeter of the playable grid with impenetrable decorative objects to define the boundary.
+    /// </summary>
     void GenerateBorder()
     {
         for (int x = -borderThickness; x < mapWidth + borderThickness; x++)
         {
             for (int z = -borderThickness; z < mapHeight + borderThickness; z++)
             {
+                // Only instantiate assets if the coordinate falls strictly outside the defined playable dimensions.
                 if (x < 0 || x >= mapWidth || z < 0 || z >= mapHeight)
                 {
                     float xPos = (x * tileSize) + (tileSize * 0.5f);
@@ -110,6 +126,9 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Implements a Fisher-Yates shuffle algorithm to randomly distribute foliage across available empty coordinates.
+    /// </summary>
     void GenerateFoliage()
     {
         List<Vector2Int> availablePositions = new List<Vector2Int>();
@@ -121,6 +140,7 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
+        // Shuffle the list to randomize selection order.
         for (int i = 0; i < availablePositions.Count; i++)
         {
             Vector2Int temp = availablePositions[i];
@@ -129,6 +149,7 @@ public class MapGenerator : MonoBehaviour
             availablePositions[randomIndex] = temp;
         }
 
+        // Distribute the requested number of foliage assets, constrained by total available spaces.
         int count = Mathf.Min(foliageNum, availablePositions.Count);
         for (int i = 0; i < count; i++)
         {
@@ -138,7 +159,10 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    void RegenerateMap()
+    /// <summary>
+    /// Clears all existing procedural data, destroys associated GameObjects, and restarts the generation sequence.
+    /// </summary>
+    public void RegenerateMap()
     {
         if (pathCoroutine != null) StopCoroutine(pathCoroutine);
 
@@ -158,8 +182,12 @@ public class MapGenerator : MonoBehaviour
         pathCoroutine = StartCoroutine(GeneratePath());
     }
 
+    /// <summary>
+    /// Instantiates a given prefab at a specific grid coordinate, replacing any pre-existing object at that location.
+    /// </summary>
     void CreateTileAt(int x, int z, GameObject prefab, int id, float yOffset, float yRotation)
     {
+        // Enforce strict dimensional boundaries.
         if (x < 0 || x >= mapWidth || z < 0 || z >= mapHeight) return;
 
         if (tileData[x, z].tileObject != null)
@@ -179,20 +207,24 @@ public class MapGenerator : MonoBehaviour
         tileData[x, z].tileID = id;
     }
 
+    /// <summary>
+    /// Executes a controlled random-walk algorithm to define the enemy traversal path and terminal base location.
+    /// </summary>
     IEnumerator GeneratePath()
     {
+        // Initialize algorithm starting parameters along the top edge of the matrix.
         curX = Random.Range(0, mapWidth);
         curZ = 0;
         curDirection = Direction.DOWN;
         currentCount = 0;
         totalPathLength = 0;
 
-        // 1. Cleared out the old manual SpawnPoint instantiation that was here!
         PathWaypoints.Clear();
 
         int lastPathX = curX;
         int lastPathZ = curZ;
 
+        // Iterate until the path reaches the bottom edge or exceeds the maximum length constraint.
         while (curZ < mapHeight && totalPathLength < maxPathLength)
         {
             Direction oldDir = curDirection;
@@ -201,7 +233,7 @@ public class MapGenerator : MonoBehaviour
             GameObject prefabToUse;
             float rotation = 0f;
 
-            // Figure out the normal path tile first...
+            // Determine the appropriate spatial prefab based on the trajectory delta.
             if (oldDir == curDirection)
             {
                 prefabToUse = straightPrefab;
@@ -213,12 +245,10 @@ public class MapGenerator : MonoBehaviour
                 rotation = CalculateTurnRotation(oldDir, curDirection);
             }
 
-            // --- NEW: Override the normal tile if this is the very first step! ---
+            // Substitute the default path mesh with the designated origin marker for the initial node.
             if (totalPathLength == 0 && spawnPointPrefab != null)
             {
                 prefabToUse = spawnPointPrefab;
-                // Assuming your spawn point faces "down" the map by default. 
-                // Change this to 90, 180, or 270 if it faces the wrong way!
                 rotation = 0f;
             }
 
@@ -227,13 +257,13 @@ public class MapGenerator : MonoBehaviour
 
             CreateTileAt(curX, curZ, prefabToUse, 1, pathHeightOffset, rotation);
 
-            // --- NEW: Grab the reference to the tile we just placed so the spawner can find it ---
+            // Cache the reference to the localized origin for the enemy spawning sub-system.
             if (totalPathLength == 0)
             {
                 SpawnPoint = tileData[curX, curZ].tileObject.transform;
             }
 
-            // Record the waypoint for the enemies
+            // Record the mathematical world coordinate for subsequent nav-mesh or waypoint routing.
             float wpX = (curX * tileSize) + (tileSize * 0.5f);
             float wpZ = (curZ * tileSize) + (tileSize * 0.5f);
             PathWaypoints.Add(new Vector3(wpX, pathHeightOffset + 0.5f, wpZ));
@@ -241,10 +271,10 @@ public class MapGenerator : MonoBehaviour
             MoveCursor();
 
             totalPathLength++;
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.05f); // Intentional delay for visual sequencing.
         }
 
-        // --- The Base spawning logic below remains exactly the same! ---
+        // Establish the final base coordinates, pushing the structure slightly past the final path node.
         int baseCenterX = lastPathX;
         int baseCenterZ = lastPathZ;
 
@@ -260,8 +290,8 @@ public class MapGenerator : MonoBehaviour
         if (basePrefab != null)
         {
             Vector3 basePos = new Vector3(endX, pathHeightOffset, endZ);
-
             float finalRotation = baseRotationModifier;
+
             if (autoRotateBase)
             {
                 if (curDirection == Direction.LEFT) finalRotation += 90f;
@@ -275,12 +305,13 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-
-    // --- UPDATED: Destroys map tiles AND overlapping border foliage ---
-    // --- UPDATED: Clears normal tiles and border trees without needing path protection ---
+    /// <summary>
+    /// Excavates a 3x3 volumetric area to ensure the player base structure does not collide 
+    /// with decorative assets or grid remnants.
+    /// </summary>
     private void ClearAreaForBase(int centerX, int centerZ)
     {
-        // 1. Clear any normal grid tiles (in case the base generated near an edge)
+        // 1. Eradicate any overlapping standard grid elements.
         for (int x = centerX - 1; x <= centerX + 1; x++)
         {
             for (int z = centerZ - 1; z <= centerZ + 1; z++)
@@ -289,6 +320,7 @@ public class MapGenerator : MonoBehaviour
                 {
                     if (tileData[x, z].tileObject != null)
                     {
+                        tileData[x, z].tileObject.SetActive(false);
                         Destroy(tileData[x, z].tileObject);
                         tileData[x, z].tileObject = null;
                         tileData[x, z].tileID = -1;
@@ -297,14 +329,14 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        // 2. Clear the Border Foliage
-        // Calculate the exact physical world boundaries of the 3x3 footprint
+        // 2. Eradicate intersecting boundary foliage.
+        // Calculate the absolute spatial footprint of the clearing.
         float minX = (centerX - 1) * tileSize;
         float maxX = (centerX + 2) * tileSize;
         float minZ = (centerZ - 1) * tileSize;
         float maxZ = (centerZ + 2) * tileSize;
 
-        // Iterate backwards to safely destroy blocking trees
+        // Execute a reverse iteration to safely perform destructive operations on the active list.
         for (int i = borderContainer.childCount - 1; i >= 0; i--)
         {
             Transform tree = borderContainer.GetChild(i);
@@ -312,11 +344,15 @@ public class MapGenerator : MonoBehaviour
             if (tree.position.x >= minX && tree.position.x <= maxX &&
                 tree.position.z >= minZ && tree.position.z <= maxZ)
             {
+                tree.gameObject.SetActive(false);
                 Destroy(tree.gameObject);
             }
         }
     }
 
+    /// <summary>
+    /// Analyzes the remaining path distance and proximity to grid edges to enforce structural constraints on the random walk.
+    /// </summary>
     private void EvaluateMovement()
     {
         int directStepsToExit = (mapHeight - 1) - curZ;
@@ -324,6 +360,7 @@ public class MapGenerator : MonoBehaviour
         bool hittingLeftWall = (curDirection == Direction.LEFT && curX <= 0);
         bool hittingRightWall = (curDirection == Direction.RIGHT && curX >= mapWidth - 1);
 
+        // Terminate lateral movement upon boundary intersection.
         if (hittingLeftWall || hittingRightWall)
         {
             curDirection = Direction.DOWN;
@@ -333,6 +370,7 @@ public class MapGenerator : MonoBehaviour
 
         int remainingAllowedSteps = maxPathLength - totalPathLength;
 
+        // Force downward progression if maximum length limits are approaching.
         if (remainingAllowedSteps <= directStepsToExit)
         {
             if (curDirection != Direction.DOWN)
@@ -343,6 +381,7 @@ public class MapGenerator : MonoBehaviour
             return;
         }
 
+        // Force lateral progression if minimum length limits demand it.
         if (curDirection == Direction.DOWN)
         {
             int remainingRequiredSteps = minPathLength - totalPathLength;
@@ -355,6 +394,7 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
+        // Introduce stochastic turning logic to create organic path structures.
         if (currentCount > 3 && Random.value > 0.7f)
         {
             ChangeDirection();
@@ -366,19 +406,30 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Alters the current traversal vector based on lateral availability within the grid matrix.
+    /// </summary>
     private void ChangeDirection()
     {
         if (curDirection == Direction.DOWN)
         {
+            // Evaluate lateral viability to prevent recursive loops.
             bool canL = curX > 0 && tileData[curX - 1, curZ].tileID == 0;
             bool canR = curX < mapWidth - 1 && tileData[curX + 1, curZ].tileID == 0;
+
             if (canL && canR) curDirection = Random.value > 0.5f ? Direction.LEFT : Direction.RIGHT;
             else if (canL) curDirection = Direction.LEFT;
             else if (canR) curDirection = Direction.RIGHT;
         }
-        else { curDirection = Direction.DOWN; }
+        else
+        {
+            curDirection = Direction.DOWN;
+        }
     }
 
+    /// <summary>
+    /// Calculates the required rotational quaternion logic for a corner prefab given its entry and exit vectors.
+    /// </summary>
     private float CalculateTurnRotation(Direction from, Direction to)
     {
         if (from == Direction.DOWN)
@@ -391,6 +442,9 @@ public class MapGenerator : MonoBehaviour
         return 0f;
     }
 
+    /// <summary>
+    /// Updates the internal coordinate tracker according to the active traversal vector.
+    /// </summary>
     private void MoveCursor()
     {
         if (curDirection == Direction.DOWN) curZ++;

@@ -2824,6 +2824,7 @@ GameObject:
   - component: {fileID: 289267377147130207}
   - component: {fileID: -2061027399905791948}
   - component: {fileID: 2155016498343360459}
+  - component: {fileID: -9006413469516017720}
   m_Layer: 0
   m_Name: Black_Bull
   m_TagString: Untagged
@@ -2882,6 +2883,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6a68d9daa5a28e4da2382e6e1f60852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
+  isDead: 0
+--- !u!65 &-9006413469516017720
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6121179811858223285}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.3963281, z: 2.2046719}
+  m_Center: {x: 0, y: 0.68184465, z: 0.23333645}
 --- !u!1 &6294676090266129712
 GameObject:
   m_ObjectHideFlags: 0
