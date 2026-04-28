@@ -16,6 +16,10 @@ public class EnemyData : ScriptableObject
     public int spawnWeight = 1;
     public int minWaveRequirement = 1;
 
+    [Header("Spawn Dynamics")]
+    [Tooltip("Time to wait BEFORE spawning the NEXT enemy. Lower = tighter swarms.")]
+    public float timeToNextSpawn = 1.0f;
+
     // --- NEW: How much health the base loses when this enemy reaches it ---
     [Tooltip("How much damage this enemy deals to the player's base")]
     public int baseDamage = 1;

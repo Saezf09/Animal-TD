@@ -14,11 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyType
   enemyName: Dog
   enemyPrefab: {fileID: 6462483132450190904, guid: ce7d5dd015a4ac249a5f6d94f2de3f69, type: 3}
-  maxHealth: 100
-  moveSpeed: 6
+  maxHealth: 10
+  moveSpeed: 10
   turnSpeed: 10
   spawnWeight: 1
   minWaveRequirement: 1
+  timeToNextSpawn: 0.3
   baseDamage: 1
   baseAnimationWalkSpeed: 3
-  furReward: 3
+  furReward: 1

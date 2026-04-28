@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyType
   enemyName: Cat
   enemyPrefab: {fileID: 7825142667059551117, guid: 04141af118e2bc345bb5834544f14889, type: 3}
-  maxHealth: 60
-  moveSpeed: 12
+  maxHealth: 6
+  moveSpeed: 18
   turnSpeed: 12
   spawnWeight: 2
-  minWaveRequirement: 3
+  minWaveRequirement: 2
+  timeToNextSpawn: 0.5
   baseDamage: 1
   baseAnimationWalkSpeed: 6
+  furReward: 1

@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyType
   enemyName: Goat
   enemyPrefab: {fileID: 5359933283733291062, guid: bfe9365a99085d243964bbc5ad9b14a9, type: 3}
-  maxHealth: 150
-  moveSpeed: 7
+  maxHealth: 25
+  moveSpeed: 9
   turnSpeed: 10
   spawnWeight: 2
-  minWaveRequirement: 5
+  minWaveRequirement: 4
+  timeToNextSpawn: 0.8
   baseDamage: 3
+  baseAnimationWalkSpeed: 3
+  furReward: 2

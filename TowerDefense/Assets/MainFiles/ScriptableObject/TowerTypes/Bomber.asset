@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: Bomber
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   towerName: Bomber
-  dropCost: 10
+  dropCost: 60
   attackSound: {fileID: 8300000, guid: 4554bb72eed5ef249a34e0b0d9c25e90, type: 3}
   tiers:
   - towerPrefab: {fileID: 1473710097402076, guid: 6b7a23871cd2ee842841b3389e2208c4, type: 3}
-    damage: 50
-    attackRange: 15
-    fireRate: 0.4
-    splashRadius: 10
-  - towerPrefab: {fileID: 1787649280074020, guid: 48a54091141567342bfd0621b9fd5e22, type: 3}
-    damage: 75
-    attackRange: 25
+    damage: 15
+    attackRange: 20
     fireRate: 0.5
     splashRadius: 15
-  - towerPrefab: {fileID: 1957591423995574, guid: 1aabbf925db5c8b4081a8dd324c82f81, type: 3}
-    damage: 100
-    attackRange: 35
+  - towerPrefab: {fileID: 1787649280074020, guid: 48a54091141567342bfd0621b9fd5e22, type: 3}
+    damage: 30
+    attackRange: 20
     fireRate: 0.6
     splashRadius: 20
+  - towerPrefab: {fileID: 1957591423995574, guid: 1aabbf925db5c8b4081a8dd324c82f81, type: 3}
+    damage: 60
+    attackRange: 25
+    fireRate: 0.7
+    splashRadius: 25

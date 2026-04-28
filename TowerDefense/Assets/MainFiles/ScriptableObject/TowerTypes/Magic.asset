@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: Magic
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   towerName: Magic
-  dropCost: 50
+  dropCost: 100
   attackSound: {fileID: 8300000, guid: 4e2614b354aee8145b5c60d8cd35119d, type: 3}
   tiers:
   - towerPrefab: {fileID: 1367997974350908, guid: be0b768028397264d9c378dbd4f93277, type: 3}
-    damage: 150
-    attackRange: 50
-    fireRate: 0.2
+    damage: 30
+    attackRange: 40
+    fireRate: 0.67
     splashRadius: 0
   - towerPrefab: {fileID: 1064594759508384, guid: e58080f49911f2b4daa4c5be922b82a4, type: 3}
-    damage: 225
-    attackRange: 65
-    fireRate: 0.25
+    damage: 65
+    attackRange: 45
+    fireRate: 0.67
     splashRadius: 0
   - towerPrefab: {fileID: 1980452956039334, guid: 9151417fa9caea340b9ae1e93c58a4b4, type: 3}
-    damage: 300
-    attackRange: 72.5
-    fireRate: 0.3
+    damage: 150
+    attackRange: 50
+    fireRate: 0.83
     splashRadius: 0

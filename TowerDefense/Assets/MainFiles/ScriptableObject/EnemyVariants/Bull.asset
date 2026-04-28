@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyType
   enemyName: Bull
   enemyPrefab: {fileID: 6121179811858223285, guid: ddd5c50ac41ffe245bd56b4a97028f0e, type: 3}
-  maxHealth: 400
-  moveSpeed: 9
+  maxHealth: 350
+  moveSpeed: 6
   turnSpeed: 4
-  spawnWeight: 15
+  spawnWeight: 10
   minWaveRequirement: 10
+  timeToNextSpawn: 3.5
   baseDamage: 20
   baseAnimationWalkSpeed: 6
+  furReward: 25

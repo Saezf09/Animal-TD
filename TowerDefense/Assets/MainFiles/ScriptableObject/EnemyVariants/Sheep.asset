@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyType
   enemyName: Sheep
   enemyPrefab: {fileID: 8250067530979667586, guid: a3dc75204547b8a40afbba94df7bb801, type: 3}
-  maxHealth: 140
-  moveSpeed: 5
+  maxHealth: 40
+  moveSpeed: 10
   turnSpeed: 10
   spawnWeight: 1
-  minWaveRequirement: 2
+  minWaveRequirement: 3
+  timeToNextSpawn: 0.3
   baseDamage: 2
+  baseAnimationWalkSpeed: 3
+  furReward: 2

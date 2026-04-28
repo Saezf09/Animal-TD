@@ -13,69 +13,62 @@ public class EnemySpawner : MonoBehaviour
     // DEPENDENCIES & REFERENCES
     // --------------------------------------------------------
     [Header("References")]
-    [SerializeField] private MapGenerator mapGen; // Reference to the procedural grid to obtain spawn coordinates and waypoints.
-    [SerializeField] private List<EnemyData> allowedEnemyTypes = new List<EnemyData>(); // The pool of valid enemy blueprints.
+    [SerializeField] private MapGenerator mapGen;
+    [SerializeField] private List<EnemyData> allowedEnemyTypes = new List<EnemyData>();
 
     // --------------------------------------------------------
     // USER INTERFACE
     // --------------------------------------------------------
     [Header("UI Elements")]
-    [SerializeField] private TextMeshProUGUI waveText; // Text component indicating the current progression.
-    [SerializeField] private TextMeshProUGUI timerText; // Text component displaying phase status and countdowns.
+    [SerializeField] private TextMeshProUGUI waveText;
+    [SerializeField] private TextMeshProUGUI timerText;
 
     // --------------------------------------------------------
     // WAVE ECONOMY & TIMING
     // --------------------------------------------------------
     [Header("Wave Budget Settings")]
-    [SerializeField] private int totalWaves = 10; // Total number of discrete waves to generate.
-    [SerializeField] private int startingWaveWeight = 10; // The base currency available for the algorithm in wave 1.
-    [SerializeField] private int weightIncreasePerWave = 5; // Linear increment of the budget per subsequent wave.
-    [SerializeField] private float timeBetweenWaves = 5f; // Duration of the interstitial resting phase between waves.
+    [SerializeField] private int totalWaves = 10;
+    [SerializeField] private int startingWaveWeight = 10;
+    [SerializeField] private int weightIncreasePerWave = 5;
+    [SerializeField] private float timeBetweenWaves = 5f;
 
     // --------------------------------------------------------
     // SQUAD GENERATION RULES
     // --------------------------------------------------------
     [Header("Chunk Settings (Squads)")]
-    [SerializeField] private int minChunkSize = 1; // Minimum identical enemies spawned consecutively.
-    [SerializeField] private int baseMaxChunkSize = 3; // Maximum baseline consecutive identical enemies.
-    [SerializeField] private float chunkGrowthPerWave = 0.5f; // Scaling factor to expand maximum squad size over time.
-    [SerializeField] private float timeBetweenChunks = 2.0f; // Delay inserted between distinct enemy squads.
+    [SerializeField] private int minChunkSize = 1;
+    [SerializeField] private int baseMaxChunkSize = 3;
+    [SerializeField] private float chunkGrowthPerWave = 0.5f;
+    [SerializeField] private float timeBetweenChunks = 2.0f;
+    [Tooltip("Health Percentage increase per wave")]
+    [SerializeField] private float healthMultiplierScaling = 0.25f;
 
     // --------------------------------------------------------
     // SPATIAL CONFIGURATION
     // --------------------------------------------------------
     [Header("Spacing & Scaling")]
-    [SerializeField] private float baseDistanceBetweenEnemies = 2.5f; // Standard physical distance between units in a squad.
-    [SerializeField] private float enemyScaleFactor = 1f; // Global scale multiplier for instantiated enemy prefabs.
+    // --- UPDATED: Removed the old "baseDistanceBetweenEnemies" to prevent Conga Lines ---
+    [SerializeField] private float enemyScaleFactor = 1f;
+
 
     // --------------------------------------------------------
     // STATE TRACKING
     // --------------------------------------------------------
-    private int currentWave = 0; // The active wave index.
-    private bool isSpawning = false; // Mutex flag preventing concurrent wave initialization.
+    private int currentWave = 0;
+    private bool isSpawning = false;
 
-    /// <summary>
-    /// A localized data structure representing a planned cluster of identical enemies.
-    /// Used to cache generation intent before physical instantiation.
-    /// </summary>
     private struct EnemyChunk
     {
         public EnemyData enemyData;
         public int count;
     }
 
-    /// <summary>
-    /// Initializes default interface text values upon script awake.
-    /// </summary>
     private void Start()
     {
         if (waveText != null) waveText.text = $"Wave: 0 / {totalWaves}";
         if (timerText != null) timerText.text = "Awaiting Combat Initialization.";
     }
 
-    /// <summary>
-    /// Initiates the wave generation sequence. Called externally by the GameManager.
-    /// </summary>
     public void StartSpawningWaves()
     {
         if (isSpawning) return;
@@ -86,10 +79,6 @@ public class EnemySpawner : MonoBehaviour
         StartCoroutine(SpawnWavesRoutine());
     }
 
-    /// <summary>
-    /// The primary sequential logic for wave generation. Manages budget allocation, entity sorting, 
-    /// physical deployment, and interstitial cooldowns.
-    /// </summary>
     private IEnumerator SpawnWavesRoutine()
     {
         isSpawning = true;
@@ -99,51 +88,47 @@ public class EnemySpawner : MonoBehaviour
         {
             currentWave++;
 
-            // Calculate total permitted threat budget for the active sequence.
             int currentWaveBudget = startingWaveWeight + (weightIncreasePerWave * (currentWave - 1));
 
             if (waveText != null) waveText.text = $"Wave: {currentWave} / {totalWaves}";
             if (timerText != null) timerText.text = "Wave in Progress.";
 
-            // Initialize a list to stage the generated squads prior to instantiation.
             List<EnemyChunk> plannedWave = new List<EnemyChunk>();
 
-            // Phase 1: Budget Allocation (Determine entity composition until resources are depleted).
+            // Phase 1: Budget Allocation
             while (currentWaveBudget > 0)
             {
                 List<EnemyData> affordableEnemies = new List<EnemyData>();
 
-                // Filter the global pool for entities that satisfy current economic and chronological constraints.
                 foreach (var enemy in allowedEnemyTypes)
                 {
+                    // --- Assumes you added minWaveRequirement to EnemyData ---
                     if (enemy.spawnWeight <= currentWaveBudget && currentWave >= enemy.minWaveRequirement)
                     {
                         affordableEnemies.Add(enemy);
                     }
                 }
 
-                // Terminate allocation if no valid options remain.
                 if (affordableEnemies.Count == 0) break;
 
-                // Select a randomized viable entity profile.
                 EnemyData chosenEnemy = affordableEnemies[Random.Range(0, affordableEnemies.Count)];
 
-                // Calculate local batch constraints.
                 int maxAffordable = currentWaveBudget / chosenEnemy.spawnWeight;
                 int dynamicMaxChunkSize = baseMaxChunkSize + Mathf.FloorToInt(currentWave * chunkGrowthPerWave);
                 int chunkSize = Random.Range(minChunkSize, Mathf.Min(maxAffordable, dynamicMaxChunkSize) + 1);
 
-                // Deduct the aggregate cost from the current wave budget.
                 currentWaveBudget -= (chunkSize * chosenEnemy.spawnWeight);
 
-                // Cache the planned entity cluster.
                 plannedWave.Add(new EnemyChunk { enemyData = chosenEnemy, count = chunkSize });
             }
 
-            // Phase 2: Threat Sorting (Organize the deployment sequence from weakest to strongest).
+            // Phase 2: Threat Sorting 
+            // NOTE: Because Bosses have LOW weight (e.g., 1) and Dogs have HIGH weight (e.g., 10), 
+            // sorting Lowest -> Highest means Tanks spawn FIRST, and Swarms spawn LAST! 
+            // This perfectly creates the "Overtake" traffic jam!
             plannedWave.Sort((chunkA, chunkB) => chunkA.enemyData.spawnWeight.CompareTo(chunkB.enemyData.spawnWeight));
 
-            // Phase 3: Deployment (Execute the physical instantiation based on the sorted plan).
+            // Phase 3: Deployment 
             for (int c = 0; c < plannedWave.Count; c++)
             {
                 EnemyChunk chunk = plannedWave[c];
@@ -153,10 +138,10 @@ public class EnemySpawner : MonoBehaviour
                 {
                     SpawnSingleEnemy(chunk.enemyData);
 
-                    // Calculate the necessary chronological delay based on the entity's traversal velocity.
-                    float scaledDistance = baseDistanceBetweenEnemies * enemyScaleFactor;
-                    float waitTime = scaledDistance / Mathf.Max(0.1f, chunk.enemyData.moveSpeed);
-                    yield return new WaitForSeconds(waitTime);
+                    // --- THE SWARM FIX ---
+                    // Read the specific delay from the enemy data!
+                    // E.g., Dogs wait 0.15s, Cows wait 1.5s
+                    yield return new WaitForSeconds(chunk.enemyData.timeToNextSpawn);
                 }
 
                 // Append the squad interlude delay, excluding the final iteration.
@@ -174,29 +159,27 @@ public class EnemySpawner : MonoBehaviour
                 {
                     if (timerText != null) timerText.text = $"Next Wave In: {Mathf.CeilToInt(countdown)}s";
                     countdown -= Time.deltaTime;
-                    yield return null; // Yield execution to the engine for one frame.
+                    yield return null;
                 }
             }
         }
 
-        // Finalize state upon exhaustion of the configured wave limit.
         if (timerText != null) timerText.text = "All Waves Cleared.";
         isSpawning = false;
     }
 
-    /// <summary>
-    /// Instantiates a given entity blueprint at the map origin and applies initialization parameters.
-    /// </summary>
-    /// <param name="dataToSpawn">The ScriptableObject defining the enemy attributes.</param>
     private void SpawnSingleEnemy(EnemyData dataToSpawn)
     {
         GameObject newEnemy = Instantiate(dataToSpawn.enemyPrefab, mapGen.SpawnPoint.position, Quaternion.identity);
         newEnemy.transform.localScale = Vector3.one * enemyScaleFactor;
 
         EnemyMovement movement = newEnemy.GetComponent<EnemyMovement>();
+
         if (movement != null)
         {
-            // Inject the calculated pathing coordinates and behavior definitions.
+            // --- SCALING FIX: We cast it to an int/float depending on your health variable type ---
+            movement.currentHealth = dataToSpawn.maxHealth * (1.0f + (healthMultiplierScaling * currentWave));
+
             movement.Initialize(mapGen.PathWaypoints, dataToSpawn);
         }
     }

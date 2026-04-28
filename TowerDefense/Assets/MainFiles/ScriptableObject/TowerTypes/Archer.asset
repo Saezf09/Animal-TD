@@ -13,21 +13,21 @@ MonoBehaviour:
   m_Name: Archer
   m_EditorClassIdentifier: Assembly-CSharp::TowerData
   towerName: Archer
-  dropCost: 10
+  dropCost: 25
   attackSound: {fileID: 8300000, guid: 3323841e1c6b571468a42254b5d8ed0c, type: 3}
   tiers:
   - towerPrefab: {fileID: 1376233406905130, guid: acb9eeacca0ea814ab424f6393e71859, type: 3}
-    damage: 25
+    damage: 5
     attackRange: 25
-    fireRate: 1
+    fireRate: 2
     splashRadius: 0
   - towerPrefab: {fileID: 1539728516898772, guid: 4a779118b92680b4bbf0379a9814586c, type: 3}
-    damage: 50
-    attackRange: 35
-    fireRate: 1.5
+    damage: 8
+    attackRange: 25
+    fireRate: 2.5
     splashRadius: 0
   - towerPrefab: {fileID: 1059502961608188, guid: 5dc256dae1ca2eb4eb02bc2f8b894a1b, type: 3}
-    damage: 75
-    attackRange: 50
-    fireRate: 2
+    damage: 12
+    attackRange: 30
+    fireRate: 4
     splashRadius: 0

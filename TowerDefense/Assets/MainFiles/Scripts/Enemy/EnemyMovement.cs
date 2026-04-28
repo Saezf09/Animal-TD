@@ -8,24 +8,21 @@ using UnityEngine;
 /// </summary>
 public class EnemyMovement : MonoBehaviour
 {
-    // --------------------------------------------------------
+
     // STATE & DATA
-    // --------------------------------------------------------
     private EnemyData myData; // Reference to the ScriptableObject defining baseline stats.
-    private float currentHealth; // Current hit points of the entity.
-    private float currentSpeed; // Active movement speed, separated from base stats to allow dynamic modification.
+    [HideInInspector] public float currentHealth; // Current hit points of the entity.
+    [HideInInspector] public float currentSpeed; // Active movement speed, separated from base stats to allow dynamic modification.
 
     public bool isDead = false; // Prevents redundant death sequence execution and targeting.
 
-    // --------------------------------------------------------
+
     // NAVIGATION
-    // --------------------------------------------------------
     private List<Vector3> waypoints; // The sequential list of spatial coordinates defining the path.
     private int currentTargetIndex = 0; // The index of the immediate waypoint objective.
 
-    // --------------------------------------------------------
+
     // COMPONENTS
-    // --------------------------------------------------------
     private Animator anim; // Cached reference to the child animator component.
 
     /// <summary>

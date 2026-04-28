@@ -2818,15 +2818,15 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7da9f814ef5de9041aeee339a007f776, type: 2}
   waveText: {fileID: 1488528724}
   timerText: {fileID: 1112598943}
-  totalWaves: 10
-  startingWaveWeight: 10
+  totalWaves: 20
+  startingWaveWeight: 15
   weightIncreasePerWave: 5
-  timeBetweenWaves: 4
+  timeBetweenWaves: 6
   minChunkSize: 3
-  baseMaxChunkSize: 5
-  chunkGrowthPerWave: 0.5
+  baseMaxChunkSize: 10
+  chunkGrowthPerWave: 2
   timeBetweenChunks: 1
-  baseDistanceBetweenEnemies: 2.5
+  healthMultiplierScaling: 0.5
   enemyScaleFactor: 3
 --- !u!4 &1099861723
 Transform:
@@ -2856,7 +2856,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BaseManager
   maxHealth: 50
-  startingFur: 20
+  startingFur: 50
   healthText: {fileID: 1680358405}
   furText: {fileID: 617783381}
 --- !u!1 &1109450193
@@ -2895,6 +2895,7 @@ MonoBehaviour:
   spawnHeight: 50
   level2SpawnChance: 5
   activeFallingTower: {fileID: 0}
+  buyCooldown: 2
 --- !u!4 &1109450195
 Transform:
   m_ObjectHideFlags: 0
@@ -3901,7 +3902,7 @@ MonoBehaviour:
   pathHeightOffset: 0
   minPathLength: 25
   maxPathLength: 45
-  borderThickness: 20
+  borderThickness: 25
   isMapGenerated: 0
   emptyTile: {fileID: 1933440745349800, guid: b355c3687ea5b204b9de4b2f6c7ddca5, type: 3}
   straightPrefab: {fileID: 1014224152500586, guid: 6e2139f20958e144dbceba44efb32355, type: 3}

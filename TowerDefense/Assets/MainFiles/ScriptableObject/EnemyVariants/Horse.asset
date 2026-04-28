@@ -14,10 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyType
   enemyName: Horse
   enemyPrefab: {fileID: 1226737742511936304, guid: 32490464482a87549aa2f456f5723eff, type: 3}
-  maxHealth: 300
-  moveSpeed: 12
+  maxHealth: 35
+  moveSpeed: 15
   turnSpeed: 10
-  spawnWeight: 5
-  minWaveRequirement: 7
-  baseDamage: 5
+  spawnWeight: 3
+  minWaveRequirement: 6
+  timeToNextSpawn: 1.2
+  baseDamage: 3
   baseAnimationWalkSpeed: 6
+  furReward: 3

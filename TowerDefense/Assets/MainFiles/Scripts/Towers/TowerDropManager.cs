@@ -17,6 +17,9 @@ public class TowerDropManager : MonoBehaviour
     [HideInInspector] public FallingTower activeFallingTower;
     private MapGenerator mapGen;
 
+    public float buyCooldown = 4.0f;
+    private float lastBuyTime = -99f;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -39,7 +42,13 @@ public class TowerDropManager : MonoBehaviour
     // --- UPDATED: Now accepts an index parameter ---
     public void RequestTowerDrop(int towerIndex)
     {
-        
+        if (Time.time < lastBuyTime + buyCooldown)
+        {
+            Debug.Log("Shop is cooling down!");
+            return;
+        }
+
+
         // Failsafe: Ensure they pressed a valid key for the towers we have
         if (availableTowers == null || towerIndex >= availableTowers.Length) return;
 
@@ -68,6 +77,8 @@ public class TowerDropManager : MonoBehaviour
         {
             return; // Not enough Fur
         }
+
+        lastBuyTime = Time.time;
 
         if (GameManager.Instance != null)
         {
