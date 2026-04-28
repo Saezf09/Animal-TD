@@ -9,9 +9,10 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;
 
     [Header("Audio Clips")]
-    public AudioClip backgroundMusic;
-    public AudioClip enemyDeathSound;
+    public AudioClip backgroundMusic;    
     public AudioClip purchaseSound;
+    public AudioClip gameOverSound;
+    [SerializeField] private AudioClip[] enemyDeathSounds;
 
     private bool isMuted = false;
     private float masterVolume = 1f;
@@ -47,7 +48,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    //  UPDATED: Now requires the specific clip from the tower 
+    // Now requires the specific clip from the tower 
     public void PlayAttackSound(AudioClip clip)
     {
         if (sfxSource != null && clip != null)
@@ -58,13 +59,24 @@ public class AudioManager : MonoBehaviour
 
     public void PlayDeathSound()
     {
-        if (sfxSource != null && enemyDeathSound != null)
-        {
-            sfxSource.PlayOneShot(enemyDeathSound);
-        }
+        if (enemyDeathSounds == null || enemyDeathSounds.Length == 0) return;
+
+        // Pick a random sound from the array
+        int randomIndex = Random.Range(0, enemyDeathSounds.Length);
+        AudioClip chosenClip = enemyDeathSounds[randomIndex];
+
+        sfxSource.PlayOneShot(chosenClip);
     }
 
-    //  NEW: Audio Control Methods for the UI 
+    public void PlayGameOver()
+    {
+        // Reset pitch to normal just in case the last sound was an enemy death
+        sfxSource.pitch = 1.0f;
+
+        if (gameOverSound != null) sfxSource.PlayOneShot(gameOverSound);
+    }
+
+    // Audio Control Methods for the UI 
     public void ToggleMute()
     {
         isMuted = !isMuted;
