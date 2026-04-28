@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 2454a1efec447cd4bb73b7170c9a6bf0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - emptyTile: {fileID: 6503697408275254060, guid: 203b071699077c54884a49f867010f58, type: 3}
+  - straightPrefab: {fileID: 6209246712036114435, guid: 8860dfdb008f4814ea64ad2798fc2aba, type: 3}
+  - turnPrefab: {fileID: 907027770401284773, guid: 165477e7475ae5246ad1f19435cefb60, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
