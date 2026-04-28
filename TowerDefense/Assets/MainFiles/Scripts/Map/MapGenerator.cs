@@ -84,8 +84,7 @@ public class MapGenerator : MonoBehaviour
 
     public void GenerateInitialGrid()
     {
-        // --- PATCHED: Lock the shop ---
-        isMapGenerated = false;
+        isMapGenerated = false; // Lock the shop
 
         tileData = new TileData[mapWidth, mapHeight];
         for (int x = 0; x < mapWidth; x++)
@@ -98,7 +97,6 @@ public class MapGenerator : MonoBehaviour
         GenerateFoliage();
         GenerateBorder();
 
-        // --- PATCHED: Removed the 'true' flag from here so the Coroutine can control it ---
         pathCoroutine = StartCoroutine(GeneratePath());
     }
 
@@ -151,8 +149,7 @@ public class MapGenerator : MonoBehaviour
 
     public void RegenerateMap()
     {
-        // --- PATCHED: Lock the shop as soon as we start wiping the old map ---
-        isMapGenerated = false;
+        isMapGenerated = false; // Lock the shop
 
         if (pathCoroutine != null) StopCoroutine(pathCoroutine);
 
@@ -170,7 +167,6 @@ public class MapGenerator : MonoBehaviour
         GenerateFoliage();
         GenerateBorder();
 
-        // --- PATCHED: Same as above, let the Coroutine handle the unlock ---
         pathCoroutine = StartCoroutine(GeneratePath());
     }
 
@@ -256,6 +252,7 @@ public class MapGenerator : MonoBehaviour
         int baseCenterX = lastPathX;
         int baseCenterZ = lastPathZ;
 
+        // Base offset calculation (This math was actually perfect!)
         if (curDirection == Direction.DOWN) baseCenterZ += 2;
         else if (curDirection == Direction.LEFT) baseCenterX -= 2;
         else if (curDirection == Direction.RIGHT) baseCenterX += 2;
@@ -282,9 +279,7 @@ public class MapGenerator : MonoBehaviour
             EndPoint = playerBase.transform;
         }
 
-        // --- PATCHED: The map is now 100% physically spawned and finished! ---
-        // Tell the UI it is safe to buy towers.
-        isMapGenerated = true;
+        isMapGenerated = true; // Unlock the shop
     }
 
     private void ClearAreaForBase(int centerX, int centerZ)
@@ -392,13 +387,23 @@ public class MapGenerator : MonoBehaviour
 
     private float CalculateTurnRotation(Direction from, Direction to)
     {
+        // Prefab at 0 rotation connects Top (+Z) and Right (+X)
+
         if (from == Direction.DOWN)
         {
+            // Moving Down (entering from Top), turning Left. Needs Top/Left connection.
             if (to == Direction.LEFT) return 0f;
-            if (to == Direction.RIGHT) return 270f;
+
+            // Moving Down (entering from Top), turning Right. Needs Top/Right connection.
+            if (to == Direction.RIGHT) return -90f;
         }
+
+        // Moving Left (entering from Right), turning Down. Needs Right/Bottom connection.
         if (from == Direction.LEFT) return 180f;
+
+        // Moving Right (entering from Left), turning Down. Needs Left/Bottom connection.
         if (from == Direction.RIGHT) return 90f;
+
         return 0f;
     }
 

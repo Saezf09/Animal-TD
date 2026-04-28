@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Cow
   m_EditorClassIdentifier: Assembly-CSharp::EnemyType
   enemyName: Cow
-  enemyPrefab: {fileID: 6160373100432265279, guid: fbb7d66e8c29cfa4ead89fc55298e157, type: 3}
+  enemyPrefab: {fileID: 9051739482747192361, guid: fbb7d66e8c29cfa4ead89fc55298e157, type: 3}
   maxHealth: 250
   moveSpeed: 3
   turnSpeed: 10
   spawnWeight: 4
   minWaveRequirement: 5
   baseDamage: 10
+  baseAnimationWalkSpeed: 3
+  furReward: 5

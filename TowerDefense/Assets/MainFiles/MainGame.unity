@@ -999,7 +999,7 @@ MonoBehaviour:
   cameraHeight: 100
   zoomSpeed: 20
   minZoom: 5
-  maxZoom: 50
+  maxZoom: 75
   mapGen: {fileID: 1590435677}
 --- !u!1 &240373385
 GameObject:
@@ -2893,7 +2893,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 25c2aa07e0e229341be58556820331da, type: 2}
   - {fileID: 11400000, guid: 06ff4a727f521284aada17a6a493b1cc, type: 2}
   spawnHeight: 50
-  level2SpawnChance: 15
+  level2SpawnChance: 5
   activeFallingTower: {fileID: 0}
 --- !u!4 &1109450195
 Transform:
