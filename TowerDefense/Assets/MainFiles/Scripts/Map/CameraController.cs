@@ -1,23 +1,23 @@
 using UnityEngine;
 
-/// <summary>
+
 /// Manages the isometric camera system, including orthographic zooming and boundary-constrained panning.
 /// Calculates a dynamic focal point to ensure the viewport remains strictly within the generated map limits.
-/// </summary>
+
 public class CameraController : MonoBehaviour
 {
-    // --------------------------------------------------------
+    
     // MOVEMENT PARAMETERS
-    // --------------------------------------------------------
+    
     [Header("Movement Settings")]
     [SerializeField] private float panSpeed = 15f; // The translation speed of the camera across the XZ plane.
 
     [Tooltip("How high the camera sits above the map.")]
     [SerializeField] private float cameraHeight = 100f; // The fixed Y-axis altitude of the camera body.
 
-    // --------------------------------------------------------
+    
     // ZOOM PARAMETERS
-    // --------------------------------------------------------
+    
     [Header("Zoom Settings")]
     [SerializeField] private float zoomSpeed = 10f; // The rate at which scroll input affects orthographic size.
     [SerializeField] private float minZoom = 5f; // The minimum allowed orthographic size (closest zoom).
@@ -25,16 +25,16 @@ public class CameraController : MonoBehaviour
 
     private Camera cam; // Cached reference to the Camera component.
 
-    // --------------------------------------------------------
+    
     // ENVIRONMENT REFERENCES
-    // --------------------------------------------------------
+    
     [Header("References")]
     [SerializeField] private MapGenerator mapGen; // Reference to the map generator for reading grid dimensions.
 
-    /// <summary>
+    
     /// Initializes camera references, sets the designated isometric rotation, and positions 
     /// the camera body to focus exactly on the geometric center of the generated grid.
-    /// </summary>
+    
     private void Start()
     {
         cam = GetComponent<Camera>();
@@ -59,20 +59,20 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    /// <summary>
+    
     /// Executes camera logic after all primary game logic has concluded for the frame.
     /// Zoom is processed prior to movement to ensure boundary clamping utilizes the updated viewport dimensions.
-    /// </summary>
+    
     private void LateUpdate()
     {
         HandleZoom();
         HandleMovement();
     }
 
-    /// <summary>
+    
     /// Modifies the orthographic size of the camera based on user scroll input, constraining 
     /// the value within the predefined minimum and maximum zoom thresholds.
-    /// </summary>
+    
     private void HandleZoom()
     {
         if (cam != null && cam.orthographic)
@@ -86,10 +86,10 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    /// <summary>
+    
     /// Processes keyboard input to translate the camera. Computes a ground-level focal point 
     /// and clamps it within the map boundaries, accounting for the dynamic viewport padding.
-    /// </summary>
+    
     private void HandleMovement()
     {
         float x = Input.GetAxisRaw("Horizontal");

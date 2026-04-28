@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-/// <summary>
+
 /// Represents a single interactable grid tile within the game world.
 /// Manages visual feedback for player interaction and acts as the spatial anchor for tower placement and merging.
-/// </summary>
+
 public class TowerNode : MonoBehaviour
 {
     // STATE & TRACKING
@@ -104,7 +104,5 @@ public class TowerNode : MonoBehaviour
     {
         isTargeted = state;
 
-        // --- PATCHED: Removed the material color overwrite here. 
-        // We now let FallingTower.UpdateHighlight() handle 100% of the colors!
     }
 }

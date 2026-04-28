@@ -2826,7 +2826,7 @@ MonoBehaviour:
   baseMaxChunkSize: 10
   chunkGrowthPerWave: 2
   timeBetweenChunks: 1
-  healthMultiplierScaling: 0.5
+  healthMultiplierScaling: 0.4
   enemyScaleFactor: 3
 --- !u!4 &1099861723
 Transform:
@@ -2892,10 +2892,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 16ff9a81562d585499e978f61ae0bf98, type: 2}
   - {fileID: 11400000, guid: 25c2aa07e0e229341be58556820331da, type: 2}
   - {fileID: 11400000, guid: 06ff4a727f521284aada17a6a493b1cc, type: 2}
-  spawnHeight: 50
+  spawnHeight: 40
   level2SpawnChance: 5
   activeFallingTower: {fileID: 0}
-  buyCooldown: 2
+  buyCooldown: 5
 --- !u!4 &1109450195
 Transform:
   m_ObjectHideFlags: 0

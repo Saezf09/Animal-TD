@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-/// <summary>
+
 /// Handles the falling mechanics for towers dropping from the sky.
 /// Also manages the merging logic if it lands on a tower of the same level and type.
-/// </summary>
+
 public class FallingTower : MonoBehaviour
 {
-    // --------------------------------------------------------
+    
     // TOWER DATA & IDENTITY
-    // --------------------------------------------------------
+    
     [Header("Identity")]
     public TowerData myData; // Reference to the ScriptableObject containing stats
     public int currentLevel = 0; // Tracks current upgrade tier (0-indexed)
@@ -17,16 +17,16 @@ public class FallingTower : MonoBehaviour
     [HideInInspector]
     public bool isMerging = false; // Flag set by TowerNode if a valid merge target is found
 
-    // --------------------------------------------------------
+    
     // MOVEMENT SETTINGS
-    // --------------------------------------------------------
+    
     [Header("Fall Settings")]
     [SerializeField] private float fallSpeed = 5f; // Vertical gravity speed
     [SerializeField] private float horizontalSpeed = 15f; // How fast it slides to the target node
 
-    // --------------------------------------------------------
+    
     // STATE TRACKING
-    // --------------------------------------------------------
+    
     public TowerNode targetNode; // The tile we are currently aiming for
     private bool isLanded = false; // Prevents Update logic from running after touchdown
 
@@ -35,16 +35,16 @@ public class FallingTower : MonoBehaviour
     public Color inactiveColor; // Orange
     private TowerNode currentlyHighlightedNode;
 
-    // --- NEW: Forcefully override the Unity Inspector's cached memory ---
+    //  Forcefully override the Unity Inspector's cached memory 
     private void Awake()
     {
         activeColor = new Color(0f, 1f, 1f, 1f);     // Solid Cyan
         inactiveColor = new Color(1f, 0.5f, 0f, 1f); // Solid Orange
     }
 
-    /// <summary>
+    
     /// Assigns a new landing zone and updates the visual highlights on the tiles.
-    /// </summary>
+    
     public void SetTarget(TowerNode newNode)
     {
         // Turn off highlight on the old node if we change our minds mid-fall
@@ -79,7 +79,7 @@ public class FallingTower : MonoBehaviour
 
             if (transform.position.y <= targetNode.transform.position.y + targetNode.yOffset)
             {
-                Land(); // Touchdown!
+                Land(); // Tower landed on tile
                 return;
             }
         }
@@ -187,6 +187,7 @@ public class FallingTower : MonoBehaviour
         }
     }
 
+    // Change tile colour depending on active or inactive
     private void UpdateHighlight()
     {
         bool isActive = (TowerDropManager.Instance != null && TowerDropManager.Instance.activeFallingTower == this);

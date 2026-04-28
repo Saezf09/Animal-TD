@@ -9,7 +9,7 @@ public struct TowerTier
     public float attackRange;
     public float fireRate;
 
-    // --- NEW: Defines how large the explosion is. 0 means single-target. ---
+    //  Defines how large the explosion is. 0 means single-target. 
     [Tooltip("Set to 0 for single-target. Set higher than 0 for AoE explosion radius.")]
     public float splashRadius;
 }

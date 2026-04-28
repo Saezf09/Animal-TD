@@ -8,14 +8,14 @@ public class TowerShopUI : MonoBehaviour
     [SerializeField] private Button[] towerButtons;
     [SerializeField] private TextMeshProUGUI[] costTexts;
 
-    // --- UPDATED: Bulletproof Inspector Reference ---
+    //  Inspector Reference 
     [Header("System References")]
     [Tooltip("Drag the object holding your MapGenerator script here.")]
     [SerializeField] private MapGenerator mapGen;
 
+    
     private void Start()
     {
-        // (Removed FindObjectOfType - we rely on the Inspector now!)
 
         for (int i = 0; i < towerButtons.Length; i++)
         {
@@ -37,7 +37,7 @@ public class TowerShopUI : MonoBehaviour
     {
         if (BaseManager.Instance == null || TowerDropManager.Instance == null) return;
 
-        // --- UPDATED: Check our locked reference ---
+        // Check our locked reference 
         bool isMapReady = (mapGen != null && mapGen.isMapGenerated);
 
         for (int i = 0; i < towerButtons.Length; i++)

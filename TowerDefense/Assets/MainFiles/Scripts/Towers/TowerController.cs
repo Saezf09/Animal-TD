@@ -1,14 +1,14 @@
 using UnityEngine;
 
-/// <summary>
+
 /// Controls the combat logic and visual representation of a stationary tower.
 /// Handles target acquisition, firing mechanics, and dynamic range visualization.
-/// </summary>
+
 public class TowerController : MonoBehaviour
 {
-    // --------------------------------------------------------
+    
     // TOWER DATA & STATE
-    // --------------------------------------------------------
+    
     [Header("Data")]
     public TowerData myData; // Reference to the ScriptableObject containing upgrade tiers and stats.
     public int currentLevel = 0; // The current upgrade index for accessing tier data.
@@ -19,9 +19,9 @@ public class TowerController : MonoBehaviour
     [HideInInspector]
     public bool isPlaced = false; // Prevents the tower from firing or updating while falling.
 
-    // --------------------------------------------------------
+    
     // VISUAL REFERENCES & TIMERS
-    // --------------------------------------------------------
+    
     [Header("Visuals")]
     public Transform firePoint; // The transform position where projectiles or lasers originate.
     public LineRenderer laserVisual; // The line renderer used to draw the attack beam.
@@ -30,9 +30,9 @@ public class TowerController : MonoBehaviour
     private EnemyMovement currentTarget; // The enemy currently locked on by the tower.
     private LineRenderer rangeVisual; // A dynamically generated circle indicating attack radius.
 
-    /// <summary>
+    
     /// Initializes the tower's active state. Called externally once the tower has safely landed.
-    /// </summary>
+    
     public void ActivateTower()
     {
         // Ensure data is valid before attempting to read tier statistics.
@@ -43,9 +43,9 @@ public class TowerController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Programmatically generates a LineRenderer to display a smooth circle representing the tower's attack range.
-    /// </summary>
+    
+    /// generates a LineRenderer to display a smooth circle representing the tower's attack range.
+    
     private void SetupRangeVisual()
     {
         // Create a child object to hold the visual component.
@@ -89,9 +89,9 @@ public class TowerController : MonoBehaviour
     private void OnMouseEnter() { if (rangeVisual != null && isPlaced) rangeVisual.enabled = true; }
     private void OnMouseExit() { if (rangeVisual != null) rangeVisual.enabled = false; }
 
-    /// <summary>
+    
     /// Delegates mouse click events down to the underlying grid node to facilitate merging logic.
-    /// </summary>
+    
     private void OnMouseDown()
     {
         if (myNode != null) myNode.OnNodeClicked();
@@ -99,7 +99,7 @@ public class TowerController : MonoBehaviour
 
     private void Update()
     {
-        // Halt execution if the tower is still falling or missing critical data.
+        // Halt execution if the tower is still falling or missing data.
         if (!isPlaced || myData == null || myData.tiers.Length == 0) return;
 
         UpdateTarget();
@@ -127,9 +127,9 @@ public class TowerController : MonoBehaviour
         }
     }
 
-    /// <summary>
+    
     /// Scans the surrounding area for enemies and selects the one furthest along the path.
-    /// </summary>
+    
     private void UpdateTarget()
     {
         float range = myData.tiers[currentLevel].attackRange;
@@ -150,6 +150,7 @@ public class TowerController : MonoBehaviour
                 float enemyProgress = enemy.GetPathProgress();
 
                 // Compare scores to identify the enemy closest to the base.
+                // Can be changed to decide for enemy with most health, or enemy furthest awaay
                 if (enemyProgress > furthestProgress)
                 {
                     furthestProgress = enemyProgress;
@@ -160,9 +161,9 @@ public class TowerController : MonoBehaviour
         currentTarget = bestTarget;
     }
 
-    /// <summary>
+    
     /// Applies damage to the current target and triggers the laser visual effects.
-    /// </summary>
+    
     private void Shoot()
     {
         if (currentTarget == null) return;
@@ -176,7 +177,7 @@ public class TowerController : MonoBehaviour
         float dmg = myData.tiers[currentLevel].damage;
         float splash = myData.tiers[currentLevel].splashRadius;
 
-        // --- NEW: Area of Effect (AoE) Logic ---
+        //  Area of Effect (AoE) Logic 
         if (splash > 0f)
         {
             // Find all physical colliders within the splash radius centered on the target
@@ -195,18 +196,17 @@ public class TowerController : MonoBehaviour
         }
         else
         {
-            // Standard Single-Target Logic (Basic & Mage Towers)
+            // Standard Single-Target Logic (Archer & Mage Towers)
             currentTarget.TakeDamage(dmg);
             
-            // --- Visuals ---
+            //  Visuals 
             if (laserVisual != null && firePoint != null)
             {
                 laserVisual.enabled = true;
                 Color brightLaser = new Color(1f, 0.2f, 0.2f, 1f);
 
-                // Optional visual tweak: Make the laser thicker for the Mage tower, 
-                // or maybe change the color based on the tower type later!
-
+                // Make the laser thicker for the Mage tower,or change laser colour (future implementation)
+                
                 laserVisual.startColor = brightLaser;
                 laserVisual.endColor = brightLaser;
                 laserVisual.SetPosition(0, firePoint.position);
@@ -217,10 +217,10 @@ public class TowerController : MonoBehaviour
         
     }
 
-    /// <summary>
+    
     /// Dynamically generates a primitive sphere to visually represent the AoE blast radius.
     /// Fades the sphere out over a short duration to simulate a shockwave.
-    /// </summary>
+    
     private System.Collections.IEnumerator ShowExplosionRadius(Vector3 center, float radius)
     {
         // Generate a basic Unity sphere
@@ -255,7 +255,7 @@ public class TowerController : MonoBehaviour
             float alpha = Mathf.Lerp(0.6f, 0f, elapsed / duration);
             rend.material.color = new Color(1f, 0.4f, 0f, alpha);
 
-            // Optional: Slightly expand the sphere as it fades for a shockwave effect
+            // Slightly expand the sphere as it fades for a shockwave effect
             float expandScale = Mathf.Lerp(radius * 2f, radius * 2.5f, elapsed / duration);
             explosion.transform.localScale = Vector3.one * expandScale;
 
@@ -267,9 +267,9 @@ public class TowerController : MonoBehaviour
     }
 
 
-    /// <summary>
+    
     /// Draws a wireframe sphere in the Unity Editor to help visualize the tower's range during design.
-    /// </summary>
+    
     private void OnDrawGizmosSelected()
     {
         if (myData != null && myData.tiers.Length > currentLevel)

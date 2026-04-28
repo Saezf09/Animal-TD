@@ -47,7 +47,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // --- UPDATED: Now requires the specific clip from the tower ---
+    //  UPDATED: Now requires the specific clip from the tower 
     public void PlayAttackSound(AudioClip clip)
     {
         if (sfxSource != null && clip != null)
@@ -64,7 +64,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    // --- NEW: Audio Control Methods for the UI ---
+    //  NEW: Audio Control Methods for the UI 
     public void ToggleMute()
     {
         isMuted = !isMuted;

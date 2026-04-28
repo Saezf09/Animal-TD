@@ -3,38 +3,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-/// <summary>
+
 /// Orchestrates the procedural generation and deployment of enemy waves.
 /// Utilizes a dynamic budget-allocation algorithm to plan, sort, and spawn clusters of enemies.
-/// </summary>
+
 public class EnemySpawner : MonoBehaviour
 {
-    // --------------------------------------------------------
+    
     // DEPENDENCIES & REFERENCES
-    // --------------------------------------------------------
+    
     [Header("References")]
     [SerializeField] private MapGenerator mapGen;
     [SerializeField] private List<EnemyData> allowedEnemyTypes = new List<EnemyData>();
 
-    // --------------------------------------------------------
+    
     // USER INTERFACE
-    // --------------------------------------------------------
+    
     [Header("UI Elements")]
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI timerText;
 
-    // --------------------------------------------------------
+    
     // WAVE ECONOMY & TIMING
-    // --------------------------------------------------------
+    
     [Header("Wave Budget Settings")]
     [SerializeField] private int totalWaves = 10;
     [SerializeField] private int startingWaveWeight = 10;
     [SerializeField] private int weightIncreasePerWave = 5;
     [SerializeField] private float timeBetweenWaves = 5f;
 
-    // --------------------------------------------------------
+    
     // SQUAD GENERATION RULES
-    // --------------------------------------------------------
+    
     [Header("Chunk Settings (Squads)")]
     [SerializeField] private int minChunkSize = 1;
     [SerializeField] private int baseMaxChunkSize = 3;
@@ -43,17 +43,16 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("Health Percentage increase per wave")]
     [SerializeField] private float healthMultiplierScaling = 0.25f;
 
-    // --------------------------------------------------------
+    
     // SPATIAL CONFIGURATION
-    // --------------------------------------------------------
+    
     [Header("Spacing & Scaling")]
-    // --- UPDATED: Removed the old "baseDistanceBetweenEnemies" to prevent Conga Lines ---
     [SerializeField] private float enemyScaleFactor = 1f;
 
 
-    // --------------------------------------------------------
+    
     // STATE TRACKING
-    // --------------------------------------------------------
+    
     private int currentWave = 0;
     private bool isSpawning = false;
 
@@ -102,7 +101,7 @@ public class EnemySpawner : MonoBehaviour
 
                 foreach (var enemy in allowedEnemyTypes)
                 {
-                    // --- Assumes you added minWaveRequirement to EnemyData ---
+                    //  Reads minWaveRequirement from EnemyData 
                     if (enemy.spawnWeight <= currentWaveBudget && currentWave >= enemy.minWaveRequirement)
                     {
                         affordableEnemies.Add(enemy);
@@ -123,10 +122,8 @@ public class EnemySpawner : MonoBehaviour
             }
 
             // Phase 2: Threat Sorting 
-            // NOTE: Because Bosses have LOW weight (e.g., 1) and Dogs have HIGH weight (e.g., 10), 
             // sorting Lowest -> Highest means Tanks spawn FIRST, and Swarms spawn LAST! 
-            // This perfectly creates the "Overtake" traffic jam!
-            plannedWave.Sort((chunkA, chunkB) => chunkA.enemyData.spawnWeight.CompareTo(chunkB.enemyData.spawnWeight));
+            plannedWave.Sort((chunkA, chunkB) => chunkB.enemyData.maxHealth.CompareTo(chunkA.enemyData.maxHealth));
 
             // Phase 3: Deployment 
             for (int c = 0; c < plannedWave.Count; c++)
@@ -138,7 +135,6 @@ public class EnemySpawner : MonoBehaviour
                 {
                     SpawnSingleEnemy(chunk.enemyData);
 
-                    // --- THE SWARM FIX ---
                     // Read the specific delay from the enemy data!
                     // E.g., Dogs wait 0.15s, Cows wait 1.5s
                     yield return new WaitForSeconds(chunk.enemyData.timeToNextSpawn);
@@ -177,7 +173,7 @@ public class EnemySpawner : MonoBehaviour
 
         if (movement != null)
         {
-            // --- SCALING FIX: We cast it to an int/float depending on your health variable type ---
+            //  cast it to an int/float depending on health variable type
             movement.currentHealth = dataToSpawn.maxHealth * (1.0f + (healthMultiplierScaling * currentWave));
 
             movement.Initialize(mapGen.PathWaypoints, dataToSpawn);

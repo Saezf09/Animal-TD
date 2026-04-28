@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI; // --- NEW: Required for the Button component ---
+using UnityEngine.UI; // Required for the Button component 
 
 public class GameManager : MonoBehaviour
 {
-    // --- NEW: Singleton Instance ---
+    // Singleton Instance 
     public static GameManager Instance { get; private set; }
 
     [Header("UI Panels")]
@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject combatHUDPanel;
     [SerializeField] private GameObject furWalletUI;
 
-    // --- NEW: Direct reference to the Regenerate Button ---
+    //  Direct reference to the Regenerate Button 
     [Header("UI Controls")]
     [SerializeField] private Button regenerateButton;
 
@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour
         furWalletUI.SetActive(true);
         combatHUDPanel.SetActive(false);
 
-        // --- NEW: Ensure the regenerate button is clickable when a new game starts ---
+        // Ensure the regenerate button is clickable when a new game starts 
         if (regenerateButton != null) regenerateButton.interactable = true;
 
         if (mapGenerator != null) mapGenerator.GenerateInitialGrid();
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
         if (enemySpawner != null) enemySpawner.StartSpawningWaves();
     }
 
-    // --- NEW: Locks the regenerate button so the player can't wipe their towers ---
+    // Locks the regenerate button so the player can't wipe their towers 
     public void LockRegeneration()
     {
         if (regenerateButton != null)

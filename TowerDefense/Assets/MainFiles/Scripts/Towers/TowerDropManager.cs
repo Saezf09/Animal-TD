@@ -33,13 +33,13 @@ public class TowerDropManager : MonoBehaviour
 
     private void Update()
     {
-        // --- NEW: Selective purchasing using the number row ---
+        // Selective purchasing using the number row 
         if (Input.GetKeyDown(KeyCode.Alpha1)) RequestTowerDrop(0); // Buys the 1st tower
         if (Input.GetKeyDown(KeyCode.Alpha2)) RequestTowerDrop(1); // Buys the 2nd tower
         if (Input.GetKeyDown(KeyCode.Alpha3)) RequestTowerDrop(2); // Buys the 3rd tower
     }
 
-    // --- UPDATED: Now accepts an index parameter ---
+    // accepts an index parameter 
     public void RequestTowerDrop(int towerIndex)
     {
         if (Time.time < lastBuyTime + buyCooldown)

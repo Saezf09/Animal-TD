@@ -5,15 +5,15 @@ using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-/// <summary>
+
 /// Handles the procedural generation of the game map, including grid initialization,
 /// path routing, waypoint caching, and the placement of environmental assets such as foliage and the player base.
-/// </summary>
+
 public class MapGenerator : MonoBehaviour
 {
-    // --------------------------------------------------------
+    
     // DIMENSIONAL SETTINGS
-    // --------------------------------------------------------
+    
     [Header("Map Settings")]
     [SerializeField] private int mapWidth = 10;
     [SerializeField] private int mapHeight = 10;
@@ -33,9 +33,9 @@ public class MapGenerator : MonoBehaviour
 
     private int totalPathLength = 0;
 
-    // --------------------------------------------------------
+    
     // ASSET REFERENCES
-    // --------------------------------------------------------
+    
     [Header("Prefabs")]
     [SerializeField] private GameObject emptyTile;
     [SerializeField] private GameObject straightPrefab;
@@ -50,16 +50,16 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] private float baseRotationModifier = 0f;
     [SerializeField] private bool autoRotateBase = true;
 
-    // --------------------------------------------------------
+    
     // EXPOSED STATE VARIABLES
-    // --------------------------------------------------------
+    
     public Transform SpawnPoint { get; private set; }
     public Transform EndPoint { get; private set; }
     public List<Vector3> PathWaypoints { get; private set; } = new List<Vector3>();
 
-    // --------------------------------------------------------
+    
     // INTERNAL STATE TRACKING
-    // --------------------------------------------------------
+    
     private int curX, curZ;
     private int currentCount = 0;
 
