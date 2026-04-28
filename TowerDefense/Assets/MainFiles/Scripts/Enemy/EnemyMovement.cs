@@ -35,8 +35,7 @@ public class EnemyMovement : MonoBehaviour
         waypoints = pathList;
         currentTargetIndex = 0;
 
-        myData = data;
-        currentHealth = myData.maxHealth;
+        myData = data;        
         currentSpeed = myData.moveSpeed;
 
         anim = GetComponentInChildren<Animator>();

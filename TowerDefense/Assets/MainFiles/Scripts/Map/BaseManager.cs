@@ -34,7 +34,8 @@ public class BaseManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healthText; // Text component displaying current and max health.
     [SerializeField] private TextMeshProUGUI furText; // Text component displaying the current currency balance.
 
-    
+    [SerializeField] private GameObject gameOverPanel;
+
     /// Establishes the Singleton instance on script awake.
     /// Destroys any duplicate instances to ensure a single point of access.    
     private void Awake()
@@ -133,6 +134,10 @@ public class BaseManager : MonoBehaviour
     private void TriggerGameOver()
     {
         Debug.Log("Game over. The base structural integrity has been compromised.");
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayGameOver();
+        }
 
         if (healthText != null)
         {
@@ -140,6 +145,8 @@ public class BaseManager : MonoBehaviour
             healthText.color = Color.red;
         }
 
+        gameOverPanel.SetActive(true);
+               
         // Halt all physics and update cycles.
         Time.timeScale = 0f;
     }

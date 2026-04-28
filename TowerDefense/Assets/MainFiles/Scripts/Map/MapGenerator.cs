@@ -246,7 +246,7 @@ public class MapGenerator : MonoBehaviour
             MoveCursor();
 
             totalPathLength++;
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSecondsRealtime(0.05f);
         }
 
         int baseCenterX = lastPathX;

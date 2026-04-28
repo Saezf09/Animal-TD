@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PageManager : MonoBehaviour
 {
@@ -15,5 +16,9 @@ public class PageManager : MonoBehaviour
     {
         controlsPanel.SetActive(false);
         startMenuPanel.SetActive(true);
+    }
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
